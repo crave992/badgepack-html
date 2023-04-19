@@ -1,0 +1,176 @@
+@import "src/@fuse/scss/fuse";
+
+my-profile-about {
+
+    #about {
+        max-width: 1200px;
+
+        .about-sidebar {
+            padding-left: 32px;
+
+            @include media-breakpoint('sm') {
+                padding: 8px
+            }
+
+            .groups {
+
+                .content {
+
+                    .group {
+                        margin-bottom: 24px;
+
+                        &:last-child {
+                            margin-bottom: 0;
+                        }
+
+                        .logo {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            width: 48px;
+                            height: 48px;
+                            font-size: 21px;
+                            line-height: normal;
+                            border-radius: 50%;
+                            margin-right: 16px;
+                            background-color: #0f363288;
+                            color: white;
+                        }
+
+                        .name {
+                            font-weight: 600;
+                            font-size: 15px;
+                        }
+
+                        .category {
+                            color:#939393;
+                        }
+
+                        .members {
+                            margin-top: 8px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Profile boxes
+    .profile-box {
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 16px;
+        @include mat-elevation(2);
+
+        header {
+            padding: 16px;
+
+            .title {
+                font-size: 17px;
+            }
+
+            .more {
+                cursor: pointer;
+            }
+        }
+
+        .content {
+            padding: 16px;
+
+            disabled {
+                color: red;
+            }
+
+            .role-class{
+                text-transform: capitalize;
+            }
+        }
+
+        footer {
+            padding: 8px;
+            border-top: 1px solid;
+        }
+
+        &.info-box {
+
+            .info-line {
+                margin-bottom: 24px;
+
+                .title {
+                    font-size: 15px;
+                    font-weight: 600;
+                    padding-bottom: 4px;
+                }
+
+                &:last-child {
+                    margin-bottom: 0;
+                }
+            }
+        }
+    }
+}
+
+my-profile-about .profile-box .content {
+    padding: 16px;
+    padding-bottom: 30px;
+}
+
+.generatePass {
+    margin-bottom: 16px;
+    margin-left: -7px;
+}
+.email-notification {
+    .quote{
+        text-indent: 50px;
+        font-style: italic;
+    }
+}
+
+.switch {
+    display: inline-block;
+    height: 23px;
+    position: relative;
+    width: 40px;
+}
+
+.switch input {
+    display:none;
+}
+
+.slider {
+    background-color: #ccc;
+    bottom: 0;
+    cursor: pointer;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: .4s;
+}
+
+.slider:before {
+    background-color: #fff;
+    bottom: 4px;
+    content: "";
+    height: 15px;
+    left: 4px;
+    position: absolute;
+    transition: 0.4s;
+    width: 15px;
+}
+
+input:checked + .slider {
+    background-color: #66bb6a;
+}
+
+input:checked + .slider:before {
+    transform: translateX(17px);
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}

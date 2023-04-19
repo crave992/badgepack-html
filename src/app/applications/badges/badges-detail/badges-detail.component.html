@@ -1,0 +1,65 @@
+<div id="badge" class="inner-scroll" fxLayout="row" fxFlexFill fxLayoutAlign="center center">
+    <div id="container" fxLayoutAlign="center center" fxFlexFill>
+        <mat-card>
+            <div class="header">
+                <div class="row" fxLayoutAlign="center center">
+                    <img class="profile-pic" src="{{badge?.user?.meta?.image }}">
+                    <img class="qrcode"
+                        src="https://www.kaspersky.com/content/en-global/images/repository/isc/2020/9910/a-guide-to-qr-codes-and-how-to-scan-qr-codes-2.png">
+                </div>
+                <div class="row" fxLayoutAlign="center center">
+                    <p class="csid" style="position: relative;z-index: 9999;"> {{badge?.user?.code}} </p>
+                </div>
+            </div>
+            <div class="name">
+                <p class="username" matTooltip="{{ badge?.user?.name }}"> {{badge?.user?.username}} </p>
+            </div>
+            <div>
+                <div class="column w-100-p" fxFlex fxLayoutAlign="start center">
+                    <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="10">
+                       
+                    </div>
+                    <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="30">
+                        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                            <img class="badge-icon" 
+                              src="{{badge?.badge?.meta?.image || 'assets/images/logos/badgepack-logo-2021.png'}}"> 
+                        </div>
+                    </div>
+                    <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="60">
+                        <div fxLayout="row" class="pt-12 pr-8" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                            <div fxFlex="70" class="pl-16" style="font-size: 15px; color:#089252; text-align: center;">{{badge?.badge?.name}}</div> 
+                        </div>
+
+                        <div fxLayout="row" class="pt-4 pr-8" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                            <div fxFlex="70" class="pl-16" style="font-size: 12px; text-align: center;">BI-{{badge?.claim_id}}</div>
+                        </div>
+
+                        <div fxLayout="row" class="pt-12" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                            <div fxFlex="100"  *ngIf="badge?.enabled_at != null">
+                                <span>Issuance Date: {{ badge?.enabled_at | tzDate:'DD-MMM-YYYY  hh:mmA' }}</span>
+                            </div>
+                        </div>
+
+                        <div fxLayout="row" class="pt-12" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                            <div fxFlex="100"> Issued by: {{badge?.creator?.username}} via 
+                                <span *ngIf="badge?.application === 'Badge'">BadgePack</span>
+                                <span *ngIf="badge?.application !== 'Badge'">{{badge?.application}}</span>
+                            </div>
+                        </div>
+
+                        <div fxLayout="row" class="pt-12 pb-16" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                            <div fxFlex="100">
+                                <span>Expiry Date: <span  *ngIf="badge?.expired_at !== null"> 
+                                    {{ badge?.expired_at | tzDate:'DD-MMM-YYYY  hh:mmA' }} </span>
+                                    <span  *ngIf="badge?.expired_at === null"> No Expiration </span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="badges-lg"> 
+                    </div>
+                </div>
+            </div>
+        </mat-card>
+    </div>
+</div>

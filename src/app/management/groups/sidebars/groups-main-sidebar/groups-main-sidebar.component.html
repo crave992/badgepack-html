@@ -1,0 +1,34 @@
+<!-- SIDEBAR CONTENT -->
+<div class="content pt-24 pr-24 pb-24" fusePerfectScrollbar [@animate]="{value:'*',params:{y:'50px'}}">
+    <div class="nav material2">
+
+        <div class="nav-item">
+            <a class="nav-link" matRipple [routerLink]="'/groups'"
+               [routerLinkActive]="['active', 'accent']">
+                <mat-icon class="nav-link-icon">view_headline</mat-icon>
+                <span>All</span>
+            </a>
+        </div>
+
+        <div class="nav-subheader">FILTERS</div>
+
+        <div class="nav-item">
+            <a class="nav-link" matRipple [routerLink]="'/groups/active'"
+               [routerLinkActive]="['active', 'accent']">
+                <mat-icon class="nav-link-icon">label</mat-icon>
+                <span>Active</span>
+            </a>
+        </div>
+
+        <div class="nav-item">
+            <a class="nav-link" matRipple [routerLink]="'/groups/inactive'"
+               [routerLinkActive]="['active', 'accent']">
+                <mat-icon class="nav-link-icon">label</mat-icon>
+                <span>Inactive</span>
+            </a>
+        </div>
+
+    </div>
+
+</div>
+<!-- / SIDEBAR CONTENT -->

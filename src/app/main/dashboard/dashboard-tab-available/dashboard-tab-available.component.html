@@ -1,0 +1,127 @@
+<div class="p-24" fxLayout="row wrap" fxFlex="100" [@animateStagger]="{value:'50'}">
+    <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100">
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between" fxLayoutGap="20px" class="filters">
+            <div fxFlex="50">
+                <mat-expansion-panel [expanded]="false" (click)="truncateChips($event)">
+                    <mat-expansion-panel-header collapsedHeight="80px" expandedHeight="10px">
+                        <mat-panel-title>
+                            <div style="max-height: 40px;">
+                                <mat-chip-list #chipList>
+                                    <mat-icon mdPrefix>filter_list</mat-icon>
+                                    <mat-label *ngIf="!displayLabelNames?.length">&nbsp;Filter By Label</mat-label>
+                                    <mat-chip [id]="label" *ngFor="let label of displayLabelNames"
+                                        [selectable]="selectable" [removable]="removable" (removed)="remove(label)">
+                                        {{ label }}
+                                        <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                                    </mat-chip>
+                                    <mat-label *ngIf="showSeemore && hiddenLabelNames?.length">{{
+                                        hiddenLabelNames?.length }} more....</mat-label>
+                                </mat-chip-list>
+                            </div>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <mat-chip-list #chipList aria-label="Fruit selection">
+                        <mat-icon mdPrefix>filter_list</mat-icon>
+                        <mat-chip *ngFor="let label of labelNames" [selectable]="selectable" [removable]="removable"
+                            id="{{ 'chip' + label }}" (removed)="remove(label)">
+                            {{ label }}
+                            <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                        </mat-chip>
+                        <input placeholder="Add Label..." #labelNameInput #autocompleteTrigger="matAutocompleteTrigger"
+                            [formControl]="labelNameCtrl" [matAutocomplete]="auto" [matChipInputFor]="chipList"
+                            [matChipInputSeparatorKeyCodes]="separatorKeysCodes" (matChipInputTokenEnd)="add($event)">
+                    </mat-chip-list>
+                    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)" autoActiveFirstOption>
+                        <mat-option *ngFor="let label of filteredLabelNames | async" [value]="label">
+                            <mat-checkbox color="primary" style="padding: 0 12px;"
+                                [checked]="labelNames.indexOf(label) >= 0"></mat-checkbox>
+                            {{ label }}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-expansion-panel>
+            </div>
+            <div fxFlex="50">
+                <mat-card class="search-badge">
+                    <div class="search">
+                        <mat-icon>search</mat-icon>
+                        <input #filter [(ngModel)]="filterValue" (keyup)="onSearchFilter($event)"
+                            placeholder="Badge Name/ID" />
+                    </div>
+                </mat-card>
+            </div>
+        </div>
+    </div>
+    <fuse-widget class="" fxLayout="column" fxFlex="100" fxFlex.gt-xs="25" fxFlex.gt-md="20"
+        *ngFor="let available of available">
+        <div class="fuse-widget-front mat-elevation-z2">
+            <div class="pl-32 pr-32 py-16 h-188" style="text-align: center; position: relative; overflow:hidden">
+
+                <p> <img class="w-160 h-160"
+                        src="{{ available?.meta?.image || 'assets/images/logos/badgepack-logo-2021.png' }}"
+                        onerror="this.src='assets/images/logos/badgepack-logo-2021.png';" /> </p>
+
+                <button mat-icon-button fuseWidgetToggle aria-label="more"
+                    style="position: absolute; top:10px; right:0;">
+                    <mat-icon>info</mat-icon>
+                </button>
+            </div>
+
+            <div class="pb-8 pt-8" fxLayout="column" fxLayoutAlign="center center">
+                <div class="mat-headline accent-800-fg pl-pl-8 pr-8" style="text-align: center">{{ available?.name }}
+                </div>
+                <p style="margin:0;" *ngIf='available?.badge_id' class="text-truncate"> BG-{{ available?.badge_id }}</p>
+            </div>
+            <div class="px-16 py-4 border-top" style="text-align: center">
+                <div class="labels">
+                    <ng-container *ngFor="let label of available?.labels; index as i">
+                        <small class="text-boxed mr-0 ml-8 pl-4 pr-4 rounded" *ngIf="i <= 8">
+                            <strong matTooltip="{{ label?.name }}" matTooltipPosition="above">{{ label?.name }}</strong>
+                        </small>
+                        <small class="mr-0 ml-8 pl-4 pr-4" *ngIf="i === 9">
+                            <strong matTooltip="{{ available?.etcLabels }}" matTooltipPosition="above">...</strong>
+                        </small>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+        <div class="fuse-widget-back p-16 pt-32 mat-elevation-z2">
+            <button mat-icon-button fuseWidgetToggle class="fuse-widget-flip-button" aria-label="Flip widget">
+                <mat-icon class="s-16">close</mat-icon>
+            </button>
+            <div *ngIf="available?.checklist?.length" [id]="available?.badge_id" class="content">
+                <div *ngFor="let checklist of available?.checklist">
+                    <mat-checkbox class="mt-24" 
+                        (change)="onOpenDialog(null, checklist, null, 'checklist', available)"
+                        [checked] = "checkedItems.includes(checklist?.id)"
+                        [disabled]="checklist?.meta?.allow_user !== true">
+                        <div *ngIf="checklist?.integration_link !== null">
+                            <a target="_blank" href="{{ checklist?.integration_link }}">{{ checklist?.title }}</a>
+                        </div>
+                        <div *ngIf="checklist?.integration_link === null" class="title">
+                            {{ checklist?.title }}
+                        </div>
+                    </mat-checkbox>
+                </div>
+            </div>
+            <div style="text-align: center;">
+                <div *ngIf="!available?.checklist.length">
+                    <p class="text-wrap" [innerHTML]="truncateChar(available?.description)"></p>
+                    <p *ngIf="available?.description?.length > 300" class="see-more" (click)="onOpenDialog(
+                        available?.description, 
+                        available?.checklist,
+                        'available',
+                        'details'
+                        )">See more
+                    </p>
+                </div>
+                <p *ngIf="available?.show === true || available?.checklist.length" class="see-more" (click)="onOpenDialog(
+                        available?.description, 
+                        available?.checklist,
+                        'available',
+                        'details'
+                        )">See more
+                </p>
+            </div>
+        </div>
+    </fuse-widget>
+</div>

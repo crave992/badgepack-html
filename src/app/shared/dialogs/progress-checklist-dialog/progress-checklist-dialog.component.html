@@ -1,0 +1,199 @@
+<div class="content">
+    <h4 mat-dialog-title>
+        <mat-toolbar role="toolbar" class="task-header" mat-dialog-close>
+            <h1>Checklist</h1>
+            <span class="fx-spacer"></span>
+            <button mat-icon-button>
+                <mat-icon mat-list-icon>close</mat-icon>
+            </button>
+        </mat-toolbar>
+    </h4>
+    <mat-dialog-content>
+        <div fxLayout="column" fxLayoutAlign="start stretch" id="checklist">
+            <mat-table #table [dataSource]="userChecklist" matSort
+                class="mat-elevation-z1 badge-checklist-table"
+                fusePerfectScrollbar>
+                <ng-container matColumnDef="title">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Title
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let data">
+                        <mat-checkbox *ngIf="((auth?.role === 'admin'
+                            || auth?.role === 'manager') && data?.deleted_at === null) 
+                            && data?.checklist?.type === 'Badge Prerequisite' 
+                            && data?.is_checked === 'yes' ; else templateName"
+                            [class.mat-checkbox-disabled]="false"
+                            [disabled]="data?.checklist?.type === 'Badge Prerequisite'"
+                            (click)="data?.checklist?.type === 'Badge Prerequisite' ? 
+                            onOpenDialogDelete('Badge Prerequisite', data?.checklist?.title) : false"
+                            [checked]="data?.is_checked === 'yes'
+                            && data?.tick === undefined ? true : false"
+                            (change)="onCheckSelectedCheckboxes(data?.id)"
+                            [attr.checklist-id]="data?.checklist?.id"
+                            type="checkbox" class="mr-12"
+                            (change) = "onGetUsers(data)"
+                            [ngClass]="(data?.tick === 'yes'
+                            || data?.is_checked === 'yes')
+                            && (data?.meta?.is_manually_ticked ==='yes') ? 'manual' : 'integration'">
+                        </mat-checkbox>
+                        <ng-template #templateName>
+                            <mat-checkbox *ngIf="((auth?.role === 'admin'
+                                || auth?.role === 'manager') && data?.deleted_at === null)"
+                                [class.mat-checkbox-disabled]="false"
+                                [checked]="data?.is_checked === 'yes'
+                                && data?.tick === undefined ? true : false"
+                                (change)="onCheckSelectedCheckboxes(data?.id)"
+                                [attr.checklist-id]="data?.checklist?.id"
+                                type="checkbox" class="mr-12"
+                                (change) = "onGetUsers(data)"
+                                [ngClass]="(data?.tick === 'yes'
+                                || data?.is_checked === 'yes')
+                                && (data?.meta?.is_manually_ticked ==='yes') ? 'manual' : 'integration'">
+                            </mat-checkbox>
+                        </ng-template>
+                        <mat-checkbox *ngIf="((auth?.role === 'admin'
+                            || auth?.role === 'manager') && data?.deleted_at !== null)"
+                            [class.mat-checkbox-disabled]="true" [disabled]="true"
+                            [checked]="data?.is_checked === 'yes'
+                            && data?.tick === undefined ? true : false"
+                            [attr.checklist-id]="data?.checklist?.id"
+                            type="checkbox" class="mr-12"
+                            [ngClass]="(data?.tick === 'yes'
+                            || data?.is_checked === 'yes')
+                            && (data?.meta?.is_manually_ticked ==='yes') ? 'deleted' : 'deleted_not_checked'">
+                        </mat-checkbox>
+                        <div class="title">{{ data?.checklist?.title }}</div>
+                    </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="issued_from">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Issued From
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let data">
+                        <p *ngIf="((data?.meta?.is_manually_ticked === 'yes'
+                                && data?.is_checked === 'yes')
+                                && data?.tick === 'yes')
+                                || ((data?.meta?.is_manually_ticked === 'yes'
+                                && data?.is_checked === 'yes'
+                                && data?.tick !== 'no'))
+                                || ((data?.meta?.is_manually_ticked === 'yes'
+                                && data?.is_checked === 'no'
+                                && data?.tick === 'yes'))">
+                            BadgePack
+                        </p>
+                        <div *ngIf="!data?.meta?.application">
+                            <p *ngIf="(data?.meta?.is_manually_ticked === 'no'
+                                && data?.is_checked === 'yes')">
+                                {{ data?.checklist?.type }}
+                            </p>
+                        </div>
+                        <div *ngIf="data?.meta?.application !== '' && data?.meta?.application !== null">
+                            <p>{{data?.meta?.application | titlecase}}</p>
+                        </div>
+                    </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="issuance_date">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Issuance
+                        Date </mat-header-cell>
+                    <mat-cell *matCellDef="let data">
+                        <p *ngIf="(data?.tick === 'yes' && data?.is_checked === 'no')
+                                || (data?.tick === 'yes' && data?.is_checked === 'yes'
+                                && data?.modified === true)"
+                            matTooltip="{{ data?.date_now | tzDate:'DD-MMM-YY'}} {{ ' ' + timeNow }}">
+                            a few seconds ago
+                        </p>
+                        <p *ngIf="(data?.is_checked === 'yes' && data?.modified !== true)"
+                            matTooltip="{{ data?.updated_at | tzDate:'DD-MMM-YY HH:mm' }}"
+                            matTooltipPosition="above">
+                            {{ data?.updated_at === null ? '' : data?.updated_at
+                                | tzDate:'ago' | lowercase }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="issued_by">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Issued
+                        By </mat-header-cell>
+                    <mat-cell *matCellDef="let data">
+                        <p *ngIf="((data?.tick === 'yes' && data?.is_checked === 'yes')
+                                || (data?.tick !== 'no' && data?.is_checked === 'yes')
+                                || (data?.tick === 'yes' && data?.is_checked === 'no'))
+                                && (data?.checklist?.type === 'Manual')">
+                            {{ (data?.modified === true ?
+                                auth?.name : data?.creator_user_checklists?.name) }}
+                            <br>
+                            <small *ngIf="auth?.username"
+                                class="secondary-text">
+                                {{ (data?.modified === true ?
+                                    auth?.username : data?.creator_user_checklists?.username) | uppercase }}
+                            </small>
+                        </p>
+                        <p
+                            *ngIf="((data?.tick === 'yes' && data?.is_checked === 'yes')
+                                || (data?.tick !== 'no' && data?.is_checked === 'yes')
+                                || (data?.tick === 'yes' && data?.is_checked === 'no'))
+                                && (data?.checklist?.type === 'Badge Prerequisite')">
+                            {{ (data?.modified === true ?
+                                auth?.name : data?.creator_user_checklists?.name)}}
+                            <br>
+                            <small *ngIf="auth?.username"
+                                class="secondary-text">
+                                {{ (data?.modified === true ?
+                                    auth?.username : data?.creator_user_checklists?.username) | uppercase }}
+                            </small>
+                        </p>
+                        <p *ngIf="((data?.tick === 'yes' && data?.is_checked === 'yes')
+                                || (data?.tick !== 'no' && data?.is_checked === 'yes')
+                                || (data?.tick === 'yes' && data?.is_checked === 'no'))
+                                && (data?.checklist?.type === 'Ubertickets')">
+                            {{ data?.modified === true ?
+                                auth?.name : data?.creator_user_checklists?.name}}
+                            <br>
+                            <small
+                                *ngIf="data?.creator_user_checklists?.username"
+                                class="secondary-text">
+                                {{ (data?.modified === true ?
+                                    auth?.username : data?.creator_user_checklists?.username) | uppercase }}
+                            </small>
+                        </p>
+                        <p *ngIf="((data?.tick === 'yes' && data?.is_checked === 'yes')
+                                || (data?.tick !== 'no' && data?.is_checked === 'yes')
+                                || (data?.tick === 'yes' && data?.is_checked === 'no'))
+                                && (data?.checklist?.type === 'PlayerOne')">
+                                {{ data?.modified === true ?
+                                    auth?.name : data?.creator_user_checklists?.name }}
+                            <br>
+                            <small *ngIf="data?.user?.username"
+                                class="secondary-text">
+                                {{ (data?.modified === true ?
+                                    auth?.username : data?.creator_user_checklists?.username) | uppercase }}
+                            </small>
+                        </p>
+                    </mat-cell>
+                </ng-container>
+                <mat-header-row *matHeaderRowDef="tableColumns; sticky: true">
+                </mat-header-row>
+                <mat-row *matRowDef="let row; columns: tableColumns;"></mat-row>
+            </mat-table>
+        </div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end" class="pb-20">
+        <div fxLayout="row" fxLayoutAlign="center start" fxFlex="1 0 auto">
+            <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                <button mat-raised-button mat-dialog-close>{{ cancelText
+                    }}</button>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="end center" fxFlex="1 0 auto"
+                *ngIf="isUpdate">
+                <button type="button" (click)="save('issueBadge')"
+                    mat-raised-button color="accent">
+                    {{ confirmText }}
+                </button>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="end center" fxFlex="1 0 auto"
+                *ngIf="isUpdate === false">
+                <button type="button" mat-raised-button color="accent"
+                    [disabled]="isDisabled" (click)="save('save_progress')">
+                    Save Progress </button>
+            </div>
+        </div>
+    </mat-dialog-actions>
+</div>

@@ -1,0 +1,40 @@
+<div id="my-profile" class="page-layout simple tabbed">
+
+    <!-- HEADER -->
+    <div class="header p-24" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row"
+        fxLayoutAlign.gt-sm="space-between end">
+
+        <div class="user-info" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row"
+            fxLayoutAlign.gt-sm="start center">
+            <img class="profile-image avatar huge" [src]="auth?.meta?.image"
+                [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+            <div class="name" [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                {{ auth?.name }}
+            </div>
+        </div>
+
+        <div class="actions" fxLayout="row" fxLayoutAlign="end center" [@animate]="{value:'*',params:{delay:'200ms'}}">
+            <button class="d-none" [routerLink]="['/my/inbox']" mat-raised-button color="primary" aria-label="Inbox">
+                <mat-icon>mail</mat-icon>
+                <span class="ml-4 d-none">Inbox</span>
+            </button>
+        </div>
+
+    </div>
+    <!-- / HEADER -->
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <mat-tab-group dynamicHeight="true">
+
+            <mat-tab label="About">
+                <my-profile-about></my-profile-about>
+            </mat-tab>
+
+        </mat-tab-group>
+
+    </div>
+    <!-- / CONTENT -->
+
+</div>

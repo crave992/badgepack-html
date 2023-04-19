@@ -1,0 +1,17 @@
+// Import Fuse core library
+@import "@fuse/scss/core";
+
+// Import app.theme.scss
+@import "app/app.theme";
+
+.d-none {
+    display: none !important;
+}
+
+.v-hidden {
+    visibility: hidden;
+}
+
+.swal2-popup {
+    font-size: 1.6rem !important;
+}

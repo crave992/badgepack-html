@@ -1,0 +1,127 @@
+<ng-container *ngIf="badge">
+    <!-- HEADER -->
+    <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
+
+        <!-- APP TITLE -->
+        <div fxLayout="row" fxLayoutAlign="start center">
+
+            <button mat-icon-button class="mr-0 mr-sm-16" *ngIf="self_page" [routerLink]="'/boards'">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+
+            <div class="badge-image mr-8 mr-sm-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                <img class="avatar" [src]="badge?.meta?.image || 'assets/images/logos/badgepack-logo-2021.png'">
+            </div>
+
+
+            <div fxLayout="column" fxLayoutAlign="start start"
+                [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                <div class="h2">
+                    <strong *ngIf="badge.id" class="mr-8">[BG-{{badge?.badge_id || 'id'}}] {{ badge?.name || 'New Badge' }}</strong>
+                </div>
+            </div>
+        </div>
+        <!-- / APP TITLE -->
+        <div fxLayout="row" fxLayoutAlign="start center">
+            <mat-form-field class="w-120">
+                <mat-label>Status</mat-label>
+                <mat-select value= 'active' (selectionChange)="onSubmit($event)">
+                    <mat-option value="all">
+                        {{'all' | titlecase}}
+                    </mat-option>
+                    <mat-option value="active">
+                        {{'Issued' | titlecase}}
+                    </mat-option>
+                    <mat-option value="inactive">
+                        {{'No Badge' | titlecase}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <!-- SEARCH -->
+            <div class="search-wrapper mx-32 mx-md-15" fxHide.lt-sm>
+                <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                    <mat-icon>search</mat-icon>
+                    <input #filter [(ngModel)]="filterValue" (input)="searchFilter($event)"
+                        placeholder="Search for a username" />
+                    <mat-icon class="btn-filter-list">filter_list</mat-icon>
+                </div>
+            </div>
+        </div>
+        <!-- / SEARCH -->
+    </div>
+    <!-- / HEADER -->
+
+    <!-- CONTENT CARD -->
+    <div class="content-card">
+        <mat-paginator #paginator class="w-100-p" [length]="badges.length" [pageIndex]="0" [pageSize]="pageSize"
+        [pageSizeOptions]="[100, 250, 500, 750, 1000, 2000]" (page)="onPageChange($event)">
+        </mat-paginator>
+        <div class="counts">
+            <div class="green-400-fg text-bold pt-4 pr-16 user-count" *ngIf="filterStatus==='all' && activeCount <= 9 || filterStatus==='active' && activeCount <= 9">
+                <span class="mr-12"><mat-icon style="font-size: 34px;">people</mat-icon></span>
+                  0{{ activeCount|| 0 }} <span *ngIf="filterStatus==='all'" class ="primary-900-fg"> &nbsp; | </span> 
+            </div>
+            <div class="green-400-fg text-bold pt-4 pr-16 user-count" *ngIf="filterStatus==='all' && activeCount > 9 || filterStatus==='active' && activeCount > 9 ">
+                <span class="mr-12"><mat-icon style="font-size: 34px;">people</mat-icon></span>
+                  {{ activeCount|| 0 }} <span *ngIf="filterStatus==='all'" class ="primary-900-fg"> &nbsp; | </span>
+            </div>
+            <div class="red-500-fg text-bold pt-4 pr-16 user-count" *ngIf="filterStatus==='all' && inactiveCount <= 9 || filterStatus==='inactive' && inactiveCount <= 9">
+                <span class="mr-12"><mat-icon style="font-size: 34px;">people</mat-icon></span>
+                 0{{ inactiveCount|| 0 }} <span *ngIf="filterStatus==='all'" class ="primary-900-fg"> &nbsp; | </span>
+            </div>
+            <div class="red-500-fg text-bold pt-4 pr-16 user-count" *ngIf="filterStatus==='all' && inactiveCount > 9 || filterStatus==='inactive' && inactiveCount > 9">
+                <span class="mr-12"><mat-icon style="font-size: 34px;">people</mat-icon></span>
+                   {{ inactiveCount|| 0 }} <span *ngIf="filterStatus==='all'" class ="primary-900-fg"> &nbsp; | </span>
+            </div>
+            <div class="accent-800-fg text-bold pt-8 pr-16 user-count" *ngIf="badges?.length > 9 && filterStatus==='all'">
+                <span class="mr-12"><mat-icon style="font-size: 34px;">people</mat-icon></span>{{ badges?.length || 0 }}
+            </div>
+            <div class="accent-800-fg text-bold pt-8 pr-16 user-count" *ngIf="badges?.length <= 9 && filterStatus==='all'">
+                <span class="mr-12"><mat-icon style="font-size: 34px;">people</mat-icon></span>0{{ badges?.length || 0 }}
+            </div>
+        </div>
+        <div class="mt-256" style="text-align: center;" *ngIf="pageSlice.length <= 0">
+            <p style="font-size: 30px">
+                NO RESULTS FOUND!
+            </p>
+        </div>
+        <div class="content">
+           
+            <div class="pl-24 pr-24 pb-24" fxLayout="row wrap" fxLayoutAlign="start center" fxFlex="100"
+                [@animateStagger]="{value:'50'}">
+                <fuse-widget class="badge-users" [ngClass]="{'badge-user-inactive': user?.status === 'inactive'}"
+                    fxLayout="column" fxFlex="100" fxFlex.gt-xs="50" fxFlex.gt-sm="25" fxFlex.gt-md="16.6" *ngFor="let user of pageSlice">
+                    <!-- Front -->
+                    <div class="fuse-widget-front mat-elevation-z1"
+                        [ngClass]="{'grey-400-bg': user?.status === 'inactive'}">
+                        <div class="pl-16 pr-8 py-8" fxLayout="row" fxLayoutAlign="space-between center">
+                            <ng-container *ngFor="let claim of user?.badge_claims">
+                                 <div class="accent-800-fg text-bold" *ngIf="claim.badge_id === badge?.id && 
+                                  claim.user_id === user.id">BI-{{ claim?.claim_id }}</div>
+                            </ng-container>
+                        </div>
+
+                        <div fxLayout="column" fxLayoutAlign="center center">
+                            <p class="w-100-p p-12 m-0">
+                                <img class="avatar w-100-p h-100-p" [ngClass]="{'greyed': user?.status === 'inactive'}"
+                                    src="{{ user?.meta?.image }}">
+                            </p>
+                        </div>
+                        <div class="px-8 py-4 border-top" style="text-align: center">
+                            <p class="m-4 font-size-20">
+                                {{ user?.username }}
+                            </p>
+                        </div>
+                    </div>
+                    <!-- / Front -->
+                </fuse-widget>
+            </div>
+
+        </div>
+        <mat-paginator *ngIf="pageSlice.length > 12" #paginator class="w-100-p" [length]="badges.length" [pageIndex]="0" [pageSize]="pageSize"
+        [pageSizeOptions]="[100, 250, 500, 750, 1000, 2000]" (page)="onPageChange($event)">
+       </mat-paginator>
+    
+    </div>
+    <!-- / CONTENT CARD -->
+</ng-container>

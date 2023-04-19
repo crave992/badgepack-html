@@ -1,0 +1,18 @@
+<h2 mat-dialog-title>{{title}}</h2>
+<mat-dialog-content class="mat-typography pt-16 pb-16">
+    <div fxLayout="row" fxLayoutAlign="center center" fxFlex="100">
+        <div fxLayout="row" fxLayoutAlign="center center" fxFlex="20">
+            <mat-icon class="type-icon" color="warn" *ngIf="type==='warning'" fxHide.xs>error_outline</mat-icon>
+            <mat-icon class="type-icon" color="primary" *ngIf="type==='info'" fxHide.xs>info</mat-icon>
+            <mat-icon class="type-icon" color="accent" *ngIf="type==='success'" fxHide.xs>check_circle_outline</mat-icon>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="80">
+                <div [innerHTML]="body"></div>
+        </div>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="pb-20">
+    <button mat-raised-button mat-dialog-close>{{cancelText}}</button>
+    <button (click)="onSubmit()" mat-raised-button color="accent" *ngIf="title !== 'Notice' 
+        || category === 'badge prerequisite'">{{ confirmText }}</button>
+</mat-dialog-actions>

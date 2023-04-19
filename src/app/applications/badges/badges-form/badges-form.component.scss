@@ -1,0 +1,232 @@
+badges {
+  .header {
+    .badge-image {
+      overflow: hidden;
+      width: 64px;
+      min-width: 64px;
+      max-width: 56px;
+      height: 64px;
+      min-height: 64px;
+      max-height: 64px;
+      border-radius: 4px;
+
+      img {
+        height: 100%;
+        width: auto;
+        max-width: none;
+      }
+    }
+
+    .subtitle {
+      margin: 6px 0 0 0;
+    }
+
+    .link-badge-button mat-icon {
+      height: 32px;
+      width: 32px;
+      line-height: 32px;
+      font-size: 32px;
+    }
+  }
+
+  .content {
+    .mat-tab-group,
+    .mat-tab-body-wrapper,
+    .tab-content {
+      flex: 1 1 auto;
+      max-width: 100%;
+    }
+
+    .mat-tab-body-content {
+      display: flex;
+    }
+
+    .mat-tab-label {
+      height: 64px;
+    }
+
+    .mat-checkbox .mat-checkbox-frame {
+      transform: scale(1.3);
+    }
+
+    .mat-checkbox-checked .mat-checkbox-background {
+      transform: scale(1.3);
+    }
+
+    .badge-image {
+      overflow: hidden;
+      width: 128px;
+      height: 128px;
+      margin-right: 16px;
+      margin-bottom: 16px;
+      border-radius: 4px;
+
+      img {
+        height: 100%;
+        width: auto;
+        max-width: none;
+      }
+    }
+
+    .mat-form-field-appearance-outline .mat-form-field-prefix,
+    .mat-form-field-appearance-outline .mat-form-field-suffix {
+      top: 0;
+    }
+
+    .slide-toggle-button {
+      padding-top: 20px;
+    }
+
+    .mat-form-field-appearance-fill .mat-form-field-prefix,
+    .mat-form-field-appearance-fill .mat-form-field-suffix {
+      top: 0;
+    }
+  }
+
+  .integration-box {
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 16px;
+
+    .integration-header {
+      padding: 12px;
+
+      .title {
+        font-size: 17px;
+        font-weight: bold;
+      }
+    }
+
+    .more {
+      cursor: pointer;
+    }
+  }
+
+  .email-notif {
+    flex-direction: row !important;
+
+    .mat-ink-bar {
+      display: none;
+    }
+
+    .mat-tab-body-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .mat-tab-labels {
+      display: flex;
+      flex-direction: column;
+
+      .mat-tab-label {
+        justify-content: start;
+      }
+
+      .mat-tab-label-active {
+        position: relative;
+        &::after {
+          content: '';
+          background: #000;
+          height: 2px;
+          width: 100%;
+          position: absolute;
+          top: 92%;
+          left: 0;
+          right: 0;
+        }
+      }
+    }
+  }
+
+  .email-notif .mat-tab-body-content {
+    display: flex;
+    flex-direction: column;
+  }
+  .email-notif .mat-tab-labels {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .merge-fields {
+    .mat-tab-body-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    h5 {
+      text-align: center;
+      border-bottom: 1px solid #E0E0E0;
+
+      span {
+        display: block;
+        width: fit-content;
+        margin: 0 auto -8px;
+        background: #FFFFFF;
+        color: #5e5e5e;
+        padding: 0 10px;
+      }
+    }
+
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      li {
+        line-height: 2.2;
+        font-style: italic;
+        color: #5e5e5e;
+
+        span {
+          font-style: normal;
+          padding: 3px 10px;
+          background: #E0E0E0;
+          border-radius: 2px;
+
+          &::before {
+            content: '\007B\007B';
+          }
+
+          &::after {
+            content: '\007D\007D';
+          }
+        }
+      }
+    }
+  }
+}
+
+.editor {
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  font-size: 17px;
+  min-height: 350px;
+
+  .NgxEditor__MenuBar {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    padding: .9rem;
+  }
+
+  .NgxEditor {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border: none;
+    color: rgba(0, 0, 0, 0.54);
+  }
+
+  .CodeMirror {
+    border: 1px solid #eee;
+    height: auto;
+    margin-bottom: 0.7rem;
+
+    pre {
+      white-space: pre !important;
+    }
+  }
+}
+
+.no-bottom.mat-form-field-appearance-outline .mat-form-field-wrapper {
+  padding-bottom: 0px !important;
+}

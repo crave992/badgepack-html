@@ -1,0 +1,146 @@
+<div class="page-layout simple left-sidebar inner-scroll h-100-p">
+
+    <!-- SIDEBAR -->
+    <fuse-sidebar class="sidebar" name="reports-users-sidebar" position="left" lockedOpen="gt-md">
+
+        <!-- SIDEBAR CONTENT -->
+        <div class="content p-24" fusePerfectScrollbar>
+            <div class="content">
+                <form [formGroup]="reportForm" (submit)="onSubmit()" novalidate>
+                    <div fxLayout="column" fxFlex="100">
+                        <mat-form-field appearance="outline">
+                            <mat-label>From</mat-label>
+                            <input matInput formControlName="dateFrom"
+                                [matDatepicker]="dateFrom" (focus)="dateFrom.open()" placeholder="Choose a date">
+                            <mat-datepicker-toggle matSuffix [for]="dateFrom">
+                            </mat-datepicker-toggle>
+                            <mat-datepicker #dateFrom></mat-datepicker>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                            <mat-label>To</mat-label>
+                            <input matInput formControlName="dateTo"
+                                [matDatepicker]="dateTo" (focus)="dateTo.open()" placeholder="Choose a date">
+                            <mat-datepicker-toggle matSuffix [for]="dateTo">
+                            </mat-datepicker-toggle>
+                            <mat-datepicker #dateTo></mat-datepicker>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                            <mat-label>Group</mat-label>
+                            <mat-select formControlName="groupId">
+                                <mat-option value="">All Group</mat-option>
+                                <mat-option value="na-group">No Group</mat-option>
+                                <mat-option *ngFor="let group of groupList" [value]="group.id">[{{group.code}}] {{ group.name}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <button type="submit" mat-raised-button color="accent">
+                            <span>GENERATE</span>
+                        </button>
+                        <button *ngIf="reports.paginator.length" class="mt-24" type="button" mat-raised-button (click)="exporter.exportTable('csv', {fileName: 'registered-users-report'})" color="primary">
+                            <span>EXPORT TO CSV</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- / SIDEBAR CONTENT -->
+
+    </fuse-sidebar>
+    <!-- / SIDEBAR -->
+
+    <!-- CENTER -->
+    <div class="center" fusePerfectScrollbar>
+
+        <!-- HEADER -->
+        <div class="header accent p-24" fxLayout="row" fxLayoutAlign="start center">
+
+            <button mat-icon-button class="sidebar-toggle mr-8" fxHide.gt-md
+                    (click)="toggleSidebar('reports-users-sidebar')">
+                <mat-icon>menu</mat-icon>
+            </button>
+
+            <h2 class="m-0">Registered Users Report</h2>
+
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT -->
+        <div class="content p-24">
+            <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100">
+                <mat-table #table matTableExporter [dataSource]="reports" matSort class="mat-elevation-z1 user-credit-table" #exporter="matTableExporter" fusePerfectScrollbar>
+                    <ng-container matColumnDef="code">
+                        <mat-header-cell *matHeaderCellDef> Code </mat-header-cell>
+                        <mat-cell *matCellDef="let report">
+                            {{report?.code }}
+                        </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="name">
+                        <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+                        <mat-cell *matCellDef="let report">
+                            <p>
+                                {{report?.name}}
+                            </p>
+                        </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="username">
+                        <mat-header-cell *matHeaderCellDef> Username </mat-header-cell>
+                        <mat-cell *matCellDef="let report">
+                            {{report?.username}}
+                        </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="email">
+                        <mat-header-cell *matHeaderCellDef> Email</mat-header-cell>
+                        <mat-cell *matCellDef="let report">
+                            {{report?.email}}
+                        </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="groups">
+                        <mat-header-cell *matHeaderCellDef> Groups</mat-header-cell>
+                        <mat-cell *matCellDef="let report">
+                            <span *ngFor="let group of report.groups; let i = index">
+                                {{ group.code }}<ng-container *ngIf=" (i+1) < report.groups.length">,</ng-container>
+                            </span>
+                        </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="role">
+                        <mat-header-cell *matHeaderCellDef> Role</mat-header-cell>
+                        <mat-cell *matCellDef="let report">
+                            {{ report?.role | titlecase }}
+                        </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="status">
+                        <mat-header-cell *matHeaderCellDef> Status</mat-header-cell>
+                        <mat-cell *matCellDef="let report">
+                            {{report?.status | titlecase }}
+                        </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="created_at">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header="created_at"> Created at </mat-header-cell>
+                        <mat-cell *matCellDef="let report">
+                            <p class="text-truncate" matTooltip="{{ report.created_at | tzDate:'DD-MMM-YY HH:mm' }}" matTooltipPosition="above">
+                                <span>{{ report?.created_at | tzDate:'ago' | lowercase }}</span>
+                            </p>
+                        </mat-cell>
+                    </ng-container>
+
+                    <mat-header-row *matHeaderRowDef="tableColumns; sticky: true"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: tableColumns;"></mat-row>
+                </mat-table>
+
+                <mat-paginator #paginator class="w-100-p" [length]="reports.paginator" [pageIndex]="0" [pageSize]="10"
+                    [pageSizeOptions]="[10, 25, 50, 100]">
+                </mat-paginator>
+            </div>
+        </div>
+        <!-- / CONTENT -->
+
+    </div>
+    <!-- / CENTER -->
+
+</div>

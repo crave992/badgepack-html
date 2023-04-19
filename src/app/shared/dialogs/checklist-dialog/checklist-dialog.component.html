@@ -1,0 +1,56 @@
+<div class="content">
+    <h4 mat-dialog-title>
+        <mat-toolbar role="toolbar" class="task-header" mat-dialog-close>
+            <span class="fx-spacer"></span>
+            <button mat-icon-button>
+                <mat-icon mat-list-icon>close</mat-icon>
+            </button>
+        </mat-toolbar>
+    </h4>
+
+    <mat-dialog-content>
+        <h1>Checklist</h1>
+        <mat-table #table [dataSource]="checkListSource" matSort class="mat-elevation-z1 badge-checklist-table"
+            fusePerfectScrollbar>
+            <ng-container matColumnDef="title">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> Title </mat-header-cell>
+                <mat-cell *matCellDef="let checklist">
+                    <input (change)="checkboxIsChecked($event, checklist?.id)" type="checkbox" class="issued mr-12"
+                        [checked]="checklist?.is_issued"/>
+                    {{ checklist?.title }}
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="issued_from">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> Issued From </mat-header-cell>
+                <mat-cell *matCellDef="let checklist">
+                    <div *ngIf="checklist?.is_issued">{{ checklist?.issued_from }}</div>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="issued_date">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> Isssuance Date </mat-header-cell>
+                <mat-cell *matCellDef="let checklist">
+                    <div *ngIf="checklist?.is_issued">{{ checklist?.issued_date }}</div>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="issued_by">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> Issued By </mat-header-cell>
+                <mat-cell *matCellDef="let checklist">
+                    <div *ngIf="checklist?.is_issued">
+                        <p>
+                            {{ checklist?.issued_by?.name }}
+                            <br>
+                            <small *ngIf="checklist?.issued_by?.username" class="secondary-text">{{
+                                checklist?.issued_by?.username | uppercase }}</small>
+                        </p>
+                    </div>
+                </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="tableColumns; sticky: true"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: tableColumns;"></mat-row>
+        </mat-table>
+    </mat-dialog-content>
+</div>

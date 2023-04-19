@@ -1,0 +1,103 @@
+@import "src/@fuse/scss/fuse";
+
+badges {
+    .badges-table {
+        flex: 1 1 auto;
+        border-bottom: 1px solid rgba(0, 0, 0, .12);
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+
+        .mat-header-row {
+            min-height: 64px;
+        }
+
+        .badge {
+            position: relative;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .mat-cell {
+            min-width: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .mat-column-badgeId {
+            flex: 0 1 100px;
+        }
+
+        .mat-column-badge_name {
+            flex: 0 1 200px;
+            margin-right: 10px;
+            
+            p {
+                height: 100%;
+                width: 100%;
+                word-wrap:break-word;
+            }
+        }
+
+        .mat-column-image {
+            flex: 0 1 90px;
+            
+
+            .badge-image {
+                width: 52px;
+                height: 52px;
+                border: 1px solid rgba(0, 0, 0, .12);
+            }
+        }
+
+        .mat-column-total {
+            flex: 0 1 100px;
+        }
+
+        .mat-column-recurrences {
+            flex: 0 1 150px;
+        }
+
+        .mat-column-group {
+            flex: 0 1 200px;
+            flex-wrap:wrap;
+
+            small {
+                margin-left: 0px !important;
+                margin-right: 0px !important;
+            }
+        }
+
+        .mat-column-label {
+            flex: 0 1 200px;
+            flex-wrap:wrap;
+
+            small {
+                margin-left: 0px !important;
+            }
+        }
+
+        .mat-column-date_created {
+            flex: 0 1 120px;
+        }
+
+        .mat-column-date_updated {
+            flex: 0 1 120px;
+        }
+
+        .mat-column-status {
+            flex: 0 1 60px;
+        }
+
+        .mat-column-creator {
+            flex: 0 1 150px;
+        }
+
+        .mat-column-updator {
+            flex: 0 1 150px;
+        }
+
+        .active-icon {
+            border-radius: 50%;
+        }
+    }
+}

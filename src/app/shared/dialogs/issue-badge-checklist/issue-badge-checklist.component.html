@@ -1,0 +1,60 @@
+<div class="content">
+    <h4 mat-dialog-title>
+        <mat-toolbar role="toolbar" class="task-header" mat-dialog-close>
+            <h1>Issue Badge Checklist</h1>
+            <span class="fx-spacer"></span>
+            <button mat-icon-button>
+                <mat-icon mat-list-icon>close</mat-icon>
+            </button>
+        </mat-toolbar>
+    </h4>
+    <mat-dialog-content>
+        <div fxLayout="column" fxLayoutAlign="start stretch" id="checklist">
+            <mat-table #table [dataSource]="checkList" matSort class="mat-elevation-z1 badge-checklist-table"
+                fusePerfectScrollbar>
+                <ng-container matColumnDef="title">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Title </mat-header-cell>
+                    <mat-cell *matCellDef="let data">
+                        <mat-checkbox (change)="onCheckSelectedCheckboxes(data, $event)" 
+                            [checked]="prerequisiteBadges['earned']?.indexOf(data?.badge_prerequisite_id) > -1 ? true: false"
+                            [disabled]="checklist?.indexOf(data?.badge_prerequisite_id) > -1 && 
+                                prerequisiteBadges['not_all_earned']?.indexOf(data?.badge_prerequisite_id) <= -1
+                                && data?.badge_prerequisite_id !== null"
+                            [attr.prereq-id]="data?.badge_prerequisite_id" 
+                            [attr.checklist-id]="data?.id" type="checkbox"
+                            [id]="data?.badge_prerequisite_id"
+                            [ngClass]="prerequisiteBadges['earned']?.indexOf(data?.badge_prerequisite_id) > -1
+                                && prerequisiteBadges['not_all_earned']?.indexOf(data?.badge_prerequisite_id) <= -1 
+                                ? 'integration' : 'manual'"
+                            class="badge-checklist mr-12"></mat-checkbox>
+                        {{ data?.title }}
+                    </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="description">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Description </mat-header-cell>
+                    <mat-cell *matCellDef="let data" [innerHTML]="data?.description"></mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="type">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Type </mat-header-cell>
+                    <mat-cell *matCellDef="let data"> {{ data?.type }} </mat-cell>
+                </ng-container>
+                <mat-header-row *matHeaderRowDef="tableColumns; sticky: true"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: tableColumns;"></mat-row>
+            </mat-table>
+        </div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end" class="pb-20">
+        <div fxLayout="row" fxLayoutAlign="center start" fxFlex="1 0 auto">
+            <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                <button mat-raised-button mat-dialog-close>{{ cancelText }}</button>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="end center" fxFlex="1 0 auto" *ngIf="isUpdate">
+                <button type="button" (click)="onSave()" mat-raised-button color="accent">{{ confirmText }}</button>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="end center" fxFlex="1 0 auto" *ngIf="isUpdate === false">
+                <button type="button" mat-raised-button color="accent" [disabled]="isDisabled" (click)="onSave()"> Save
+                    Progress </button>
+            </div>
+        </div>
+    </mat-dialog-actions>
+</div>

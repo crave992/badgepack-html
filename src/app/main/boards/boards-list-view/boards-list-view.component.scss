@@ -1,0 +1,102 @@
+app-boards-list-view {
+  >.header {
+    height: 160px;
+    min-height: 160px;
+    max-height: 160px;
+    .selected {
+      background: rgba(0, 0, 0, 0.12);
+      color: #ffffff;
+      padding: 8px 16px;
+      height: 40px;
+      line-height: 24px;
+      font-size: 16px;
+      border-radius: 8px 8px 0 0;
+      font-weight: bold;
+    }
+    .selector {
+      margin-left: 1px;
+      background: rgba(0, 0, 0, 0.12);
+      border-radius: 0 8px 0 0;
+      mat-icon {
+        color: #ffffff;
+      }
+    }
+    .search-wrapper {
+      width: 100%;
+      max-width: 480px;
+      border-radius: 28px;
+      overflow: hidden;
+      .search {
+        width: 100%;
+        height: 48px;
+        line-height: 40px;
+        padding: 0 18px;
+        input {
+          width: 750px;
+          height: 48px;
+          min-height: 48px;
+          max-height: 48px;
+          padding: 0 16px;
+          border: none;
+          outline: none;
+        }
+      }
+    }
+  }
+  .claims-count {
+    font-size: 21px;
+    line-height: 21px;
+    background-color: #00897b !important;
+    color: white;
+    box-shadow: 0 0 0 1.5px white, 0 0 0 1.5px black;
+    border-radius: 2px;
+  }
+  >.content {
+    flex: 1;
+  }
+}
+
+.labels {
+  min-height: 20%;
+}
+
+.labels small {
+  display: inline-block;
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.text-wrap {
+  white-space: none;
+  text-align: justify;
+}
+
+@media screen and ( max-width: 1440px) {
+  app-boards-list-viewboards {
+    fuse-widget {
+      max-width: 16.67%;
+    }
+  }
+}
+
+.badge-content {
+  max-height: 234px !important;
+  overflow: hidden;
+}
+
+.title {
+  display: inline-block;
+  overflow-wrap: anywhere;
+  vertical-align: text-top;
+}
+
+.see-more {
+  color: #00897b;
+}
+
+.see-more:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+

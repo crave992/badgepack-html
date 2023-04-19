@@ -1,0 +1,155 @@
+<div class="content">
+    <form name="checkListForm" [formGroup]="checkListForm" (submit)="onSubmit()" class="domain w-100-p"
+        fxLayout="column" fxFlex>
+        <h4 mat-dialog-title>
+            <mat-toolbar role="toolbar" class="task-header" mat-dialog-close>
+                <h1> {{ id? 'Edit Item' : 'Add Item' }} </h1>
+                <span class="fx-spacer"></span>
+                <button mat-icon-button>
+                    <mat-icon mat-list-icon> close </mat-icon>
+                </button>
+            </mat-toolbar>
+        </h4>
+        <mat-dialog-content>
+            <div fxLayout="column" fxLayoutAlign="start stretch">
+                <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                    <mat-form-field appearance="outline" fxFlex="100">
+                        <mat-label> Choose type <span class="red-400-fg">*</span></mat-label>
+                        <mat-select formControlName="type"
+                            (selectionChange)="initCheckListForm(checkListForm.controls['type'].value)"
+                            [disabled]="id? true:false">
+                            <mat-option value="Ubertickets"> Ubertickets </mat-option>
+                            <mat-option value="PlayerOne"> PlayerOne </mat-option>
+                            <mat-option value="Badge Prerequisite"> Badge Prerequisite </mat-option>
+                            <mat-option value="Manual"> Manual </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto"
+                    *ngIf="checkListForm.controls['type'].value === 'PlayerOne'">
+                    <mat-form-field appearance="outline" fxFlex="100">
+                        <input type="text" placeholder="Select Quiz" matInput formControlName="player_one_public_id" 
+                            [matAutocomplete]="auto" (keyup)="onSearch($event.target.value)">
+                        <mat-autocomplete #auto="matAutocomplete"
+                            [displayWith]="displayFn.bind(this)">
+                        <mat-option *ngFor="let quiz of searchQuizzes" [value]="quiz?.id">
+                            {{ quiz?.name }}
+                        </mat-option>
+                        </mat-autocomplete>
+                        <mat-error *ngIf="checkListForm.get('player_one_public_id').hasError('required')">
+                            This field is required
+                        </mat-error>
+                        <mat-error *ngIf="checkListForm.get('player_one_public_id').hasError('incorrect_quiz')">
+                            This quiz is invalid
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto"
+                    *ngIf="checkListForm.controls['type'].value === 'Ubertickets'">
+                    <mat-form-field appearance="outline" fxFlex="40" class="pr-4">
+                        <mat-label> Reference Code <span class="red-400-fg">*</span></mat-label>
+                        <input type="text" matInput formControlName="ubt_template_id">
+                        <mat-error *ngIf="checkListForm.get('ubt_template_id').hasError('required')">
+                            This field is required
+                        </mat-error>
+                    </mat-form-field>
+                    <mat-form-field appearance="outline" fxFlex="60" class="pr-4">
+                        <mat-label>Title<span class="red-400-fg">*</span></mat-label>
+                        <input type="text" matInput formControlName="title">
+                        <mat-error *ngIf="checkListForm.get('title').hasError('required')">
+                            This field is required
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto"
+                    *ngIf="checkListForm.controls['type'].value === 'Ubertickets'">
+                    <mat-form-field appearance="outline" fxFlex="100" class="pr-4">
+                        <mat-label> Ticket ID <span class="red-400-fg">*</span></mat-label>
+                        <input type="text" matInput formControlName="hash_id">
+                        <mat-error *ngIf="checkListForm.get('hash_id').hasError('required')">
+                            This field is required
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto"
+                    *ngIf="checkListForm.controls['type'].value === 'Badge Prerequisite'">
+                    <mat-form-field appearance="outline" fxFlex="100">
+                        <input type="text" placeholder="Select Badge" matInput formControlName="badge_prerequisite_id" 
+                            [matAutocomplete]="auto" 
+                            (keyup)="onSearch($event.target.value)">
+                        <mat-autocomplete #auto="matAutocomplete" 
+                            [displayWith]="displayFn.bind(this)">
+                          <mat-option *ngFor="let badge of searchBadges" [value]="badge?.id">
+                            {{ badge?.name }}
+                          </mat-option>
+                        </mat-autocomplete>
+                        <mat-error *ngIf="checkListForm.get('badge_prerequisite_id').hasError('required')">
+                            This field is required
+                        </mat-error>
+                        <mat-error *ngIf="checkListForm.get('badge_prerequisite_id').hasError('incorrect_prereq')">
+                            This badge is invalid
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto"
+                    *ngIf="checkListForm.controls['type'].value !== 'Ubertickets'">
+                    <mat-form-field appearance="outline" fxFlex="100" class="pr-4">
+                        <mat-label> Title <span class="red-400-fg">*</span></mat-label>
+                        <input type="text" matInput formControlName="title" [value]="titleInitialValue">
+                        <mat-error *ngIf="checkListForm.get('title').hasError('required')">
+                            This field is required
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto"
+                    *ngIf="checkListForm.controls['type'].value === 'Ubertickets'">
+                    <mat-form-field appearance="outline" fxFlex="100">
+                        <mat-label> Status <span class="red-400-fg">*</span></mat-label>
+                        <mat-select formControlName="ubt_template_status">
+                            <mat-option value="new">New</mat-option>
+                            <mat-option value="resolved">Resolved</mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="checkListForm.get('ubt_template_status').hasError('required')">
+                            This field is required
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div *ngIf="checkListForm.controls['type'].value === 'Manual'" fxLayout="row" fxLayoutAlign="start center" class="ml-4 mb-16">
+                    <div formGroupName="meta" >
+                        <mat-checkbox formControlName="allow_user">
+                            &nbsp; Allow Member to tick this item
+                        </mat-checkbox>
+                    </div>
+                </div>
+                <div fxLayout="column">
+                    <div class="editor w-100-p mb-10">
+                        <ngx-editor-menu [editor]="DescriptionEditor" [toolbar]="toolbar">
+                        </ngx-editor-menu>
+                        <ngx-editor [editor]="DescriptionEditor" matInput
+                            placeholder="Description:"
+                            formControlName="description" (keyup)="countDescriptionLength($event)" 
+                            (paste)="onPaste($event)"
+                            (keydown)="countDescriptionLength($event)" ></ngx-editor>
+                    </div>
+                   <div fxLayout="row" fxLayoutAlign="space-between start">
+                    <mat-error *ngIf="descriptionLength > 500">
+                       <p> You have exceeded the maximum <br> number of 500 characters in this field.</p>
+                    </mat-error>
+                    <p fxLayoutAlign="start end">Characters: {{descriptionLength}}</p>
+                   </div>
+                </div>
+            </div>
+        </mat-dialog-content>
+        <mat-dialog-actions align="end" class="pb-20">
+            <div fxLayout="row" fxLayoutAlign="center start" fxFlex="1 0 auto">
+                <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                    <button mat-raised-button mat-dialog-close>{{ cancelText }}</button>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="end center" fxFlex="1 0 auto">
+                    <button type="button" (click)="onSave()" [disabled]="checkListForm.invalid || descriptionLength > 500" mat-raised-button
+                        color="accent">{{ confirmText }}</button>
+                </div>
+            </div>
+        </mat-dialog-actions>
+    </form>
+</div>

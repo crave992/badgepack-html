@@ -1,0 +1,34 @@
+<div id="badge-badge" fxLayout="column">
+
+    <div id="badge-badge-form-wrapper" fxLayout="column" fxLayoutAlign="center center">
+
+        <div id="badge-badge-form" [@animate]="{value:'*',params:{duration:'300ms',y:'100px'}}">
+
+            <div class="logo">
+                <qrcode
+                    [qrdata]="badge?.badge?.code + '-' + badge?.serial"
+                    [width]="196" [level]="'M'" [scale]="'1'" [elementType]="'img'"></qrcode>
+            </div>
+            <ng-container  *ngIf="badge">
+                <div class="title orange-fg">{{ badge?.badge?.code + '-' +  badge?.serial }}</div>
+
+                <div class="text-left">
+                    <div class="mat-subheading-2">{{ badge?.badge?.name }}</div>
+                    <div class="mat-caption">
+                        {{ badge?.badge?.description }}
+                    </div>
+                    <div class="separator">
+                        <strong *ngIf="badge?.redeem" class="text red-fg">REDEEMED</strong>
+                        <strong *ngIf="!badge?.redeem" class="text green-fg">AVAILABLE</strong>
+                    </div>
+                    <div *ngIf="!badge?.transferee" class="mat-body-1 mt-16">
+                        Credited to: <em>{{ badge?.user?.name}} ({{badge?.user?.username | uppercase }})</em>
+                    </div>
+                </div>
+    
+            </ng-container>
+        </div>
+
+    </div>
+
+</div>

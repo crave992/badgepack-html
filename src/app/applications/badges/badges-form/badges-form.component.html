@@ -1,0 +1,471 @@
+<ng-container *ngIf="badge$ | async as badge">
+    <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center" fxFlex>
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="75">
+            <button mat-icon-button class="mr-0 mr-sm-16" [routerLink]="'/badges'">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+
+            <div class="badge-image mr-8 mr-sm-16" [@animate]="{
+                    value: '*',
+                    params: { delay: '50ms', scale: '0.2' }
+                }">
+                <img class="avatar w-100-p" src="{{
+                        badge?.meta?.image || 'assets/images/logos/badgepack-logo-2021.png'
+                    }}" onerror="this.src='assets/images/logos/badgepack-logo-2021.png';"/>
+            </div>
+
+            <div fxLayout="column" fxLayoutAlign="start start" [@animate]="{
+                    value: '*',
+                    params: { delay: '100ms', x: '-25px' }
+                }" fxFlex class="text-truncate">
+                <div class="h2">
+                    <strong *ngIf="badge.id" class="mr-8">{{
+                        badge?.name || "New Badge"
+                        }}</strong>
+                </div>
+                <div class="subtitle secondary-text">
+                    <span>Hash: {{ badge?.hash }} &nbsp;</span>
+                </div>
+            </div>
+        </div>
+        <div fxFlexalign="end" class="p-4">
+            <button type="submit" mat-raised-button class="save-badge-button" [disabled]="badgeForm.invalid"
+                *ngIf="pageType === 'new'" (click)="onSubmit()">
+                <span>ADD BADGE</span>
+            </button>
+
+            <button type="submit" mat-raised-button class="save-badge-button"
+
+                [disabled]="badgeForm.invalid && badgeForm.pristine && newBadgeNotifForm.invalid && newBadgeNotifForm.pristine
+                && soonToExpireNotifForm.invalid && soonToExpireNotifForm.pristine && expiredBadgeNotifForm.invalid && expiredBadgeNotifForm.pristine
+                && removedBadgeNotifForm.invalid && removedBadgeNotifForm.pristine" *ngIf="pageType === 'edit' && activeTab !== 'Checklist'" (click)="onSubmit()">
+                <span>UPDATE</span>
+            </button>
+
+            <button type="button" mat-raised-button class="save-badge-button ml-8" color="warn"
+                *ngIf="pageType === 'edit' && activeTab !== 'Checklist'" (click)="openDialog('delete')">
+                <span>DELETE</span>
+            </button>
+        </div>
+    </div>
+    <div class="content-card">
+        <div class="content">
+            <form name="badgeForm" [formGroup]="badgeForm" (submit)="onSubmit()" class="badge w-100-p" fxLayout="column"
+                fxFlex>
+                <mat-tab-group (selectedTabChange)="onTabChanged($event)">
+                    <mat-tab label="Details">
+                        <div class="tab-content p-24" fusePerfectScrollbar>
+                            <div>
+                                <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="70" class="pr-8">
+                                    <div fxLayout="row" fxLayoutAlign="start center">
+                                        <mat-form-field appearance="outline" fxFlex="30">
+                                            <mat-label>Badge ID</mat-label>
+                                            <input type="text" maxlength="40" matInput formControlName="badge_id" />
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline" fxFlex="70">
+                                            <mat-label>Name<span class="red-400-fg">*</span></mat-label>
+                                            <input type="text" maxlength="40" matInput formControlName="name"/>
+                                        </mat-form-field>
+                                    </div>
+
+                                    <div fxLayout="row" fxLayoutAlign="start center">
+                                        <div class="editor w-100-p mb-20">
+                                            <ngx-editor-menu [editor]="DescriptionEditor" [toolbar]="toolbar">
+                                            </ngx-editor-menu>
+                                            <ngx-editor [editor]="DescriptionEditor" matInput
+                                                placeholder="Description:"
+                                                formControlName="description"></ngx-editor>
+                                        </div>
+                                    </div>
+
+                                    <div fxLayout="row" fxLayoutAlign="start center">
+                                        <mat-form-field fxFlex="33" appearance="outline" class="pr-8">
+                                            <mat-label>Type<span class="red-400-fg">*</span></mat-label>
+                                            <mat-select (ngModelChange)="
+                                                    recurranceCheck()
+                                                " formControlName="recurrence_type">
+                                                <mat-option value="None">None</mat-option>
+                                                <mat-option value="Expires-after">Expires after</mat-option>
+                                                <mat-option value="End-of">Expires at the end
+                                                    of</mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" fxFlex="33">
+                                            <mat-label>Duration<span class="red-400-fg">*</span></mat-label>
+                                            <input type="number" matInput formControlName="recurrence_length"/>
+                                        </mat-form-field>
+
+                                        <mat-form-field fxFlex="34" appearance="outline" class="pl-8">
+                                            <mat-label>Recurrence<span class="red-400-fg">*</span></mat-label>
+                                            <mat-select formControlName="recurrence">
+                                                <mat-option value="hours">Hour/s</mat-option>
+                                                <mat-option value="days">Day/s</mat-option>
+                                                <mat-option value="weeks">Week/s</mat-option>
+                                                <mat-option value="months">Month/s</mat-option>
+                                                <mat-option value="years">Year/s</mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+
+                                    <div fxLayout="row" fxLayoutAlign="start center">
+                                        <mat-form-field fxFlex="50" appearance="outline" class="pr-8">
+                                            <mat-label>Status<span class="red-400-fg">*</span></mat-label>
+                                            <mat-select formControlName="status">
+                                                <mat-option value="active">Active</mat-option>
+                                                <mat-option value="inactive">Inactive</mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxLayout="row" fxLayoutAlign="start center">
+                                        <mat-form-field fxFlex="50" appearance="outline">
+                                            <mat-label>Labels</mat-label>
+                                            <mat-chip-list #labelChipList aria-label="Label selection">
+                                                <mat-chip *ngFor="let label of badgeLabels" [selectable]="true"
+                                                    [removable]="true" (removed)="removeLabels(label)">
+                                                    {{label?.name}}
+                                                    <mat-icon matChipRemove>cancel</mat-icon>
+                                                </mat-chip>
+                                                <input placeholder="New label..." #labelInput [formControl]="labelCtrl"
+                                                    [matAutocomplete]="labelAuto" [matChipInputFor]="labelChipList"
+                                                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                                    (matChipInputTokenEnd)="addTags($event)">
+                                            </mat-chip-list>
+                                            <mat-autocomplete #labelAuto="matAutocomplete"
+                                                (optionSelected)="selectedLabel($event)">
+                                                <mat-option *ngFor="let label of displayLabels" [value]="label">
+                                                    {{label?.name}}
+                                                </mat-option>
+                                            </mat-autocomplete>
+                                        </mat-form-field>
+                                        <input type="file" accept="image/*"
+                                            (change)="onChangeImage($event.target.files)">
+                                    </div>
+                                </div>
+
+                                <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="30" class="pl-8">
+                                    <div fxLayout="row" fxLayoutAlign="start center">
+                                        <mat-form-field formGroupName="meta" fxFlex="100" appearance="outline">
+                                            <mat-label>Timezone<span class="red-400-fg">*</span></mat-label>
+                                            <mat-select formControlName="timezone">
+                                                <mat-option value="Asia/Manila">Asia/Manila</mat-option>
+                                                <mat-option value="Asia/Hong_Kong">Asia/Hong Kong</mat-option>
+                                                <mat-option value="Asia/Singapore">Asia/Singapore</mat-option>
+                                                <mat-option value="Australia/Adelaide">Australia/Adelaide</mat-option>
+                                                <mat-option value="Australia/Brisbane">Australia/Brisbane</mat-option>
+                                                <mat-option value="Australia/Darwin">Australia/Darwin</mat-option>
+                                                <mat-option value="Australia/Melbourne">Australia/Melbourne</mat-option>
+                                                <mat-option value="Australia/Perth">Australia/Perth</mat-option>
+                                                <mat-option value="America/Honolulu">America/Anchorage</mat-option>
+                                                <mat-option value="America/Chicago">America/Chicago</mat-option>
+                                                <mat-option value="America/Denver">America/Denver</mat-option>
+                                                <mat-option value="America/Los_Angeles">America/Los
+                                                    Angeles</mat-option>
+                                                <mat-option value="America/Phoenix">America/Phoenix</mat-option>
+                                                <mat-option value="America/New_York">America/New
+                                                    York</mat-option>
+                                                <mat-option value="Pacific/Honolulu">Pacific/Honolulu</mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+
+
+                                    <div fxLayout="row" fxLayoutAlign="start center">
+                                        <mat-form-field fxFlex="100" appearance="outline">
+                                            <mat-label>Coverage<span class="red-400-fg">*</span></mat-label>
+                                            <mat-select formControlName="coverage">
+                                                <mat-option value="all">All - Group/s should
+                                                    exist</mat-option>
+                                                <mat-option value="any">Any - Group/s could
+                                                    exist</mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+
+                                    <div fxLayout="row" fxLayoutAlign="start center">
+                                        <mat-form-field appearance="outline" fxFlex="100" class="mb-8">
+                                            <mat-label>Groups<span class="red-400-fg">*</span></mat-label>
+                                            <mat-chip-list #groupChipList aria-label="Group selection"
+                                                formControlName="groups">
+                                                <mat-chip *ngFor=" let badgeGroup of badgeGroups" [selectable]="true"
+                                                    [removable]="true" (removed)="removeGroup(badgeGroup)"
+                                                    [matTooltip]="badgeGroup.name" matTooltipPosition="above">
+
+                                                    {{ badgeGroup?.code || badgeGroup?.name | uppercase}}
+                                                    <mat-icon matChipRemove>cancel</mat-icon>
+                                                </mat-chip>
+                                                <input placeholder="New group..." #groupInput [formControl]="groupCtrl"
+                                                    [matAutocomplete]="groupAuto" [matChipInputFor]="groupChipList"/>
+                                            </mat-chip-list>
+                                            <mat-autocomplete #groupAuto="matAutocomplete"
+                                                (optionSelected)="selectedGroup($event)">
+                                                <mat-option *ngFor="let displayGroup of displayGroups"
+                                                    [value]="displayGroup">
+                                                    <strong *ngIf="displayGroup.code"
+                                                        class="mr-4">[{{displayGroup.code}}]</strong>
+                                                    {{ displayGroup.name }}
+                                                </mat-option>
+                                            </mat-autocomplete>
+                                            <mat-hint>Users must be a member of ALLor ANY of the following groupcoverage
+                                            </mat-hint>
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxLayout="row" fxLayoutAlign="start center" class="ml-4 mt-16">
+                                        <mat-checkbox [checked]="checked" formControlName="external">
+                                            &nbsp; Allow issuance of badge to
+                                            external staff
+                                        </mat-checkbox>
+                                    </div>
+                                    <div fxLayout="row" fxLayoutAlign="start center" class="ml-12 mt-8">
+                                        <mat-hint>This will allow the issuance of badge to users outside
+                                            coverage</mat-hint>
+                                    </div>
+                                    <div *ngIf="pageType === 'edit' && badge?.id" fxLayout="row" 
+                                        fxLayoutAlign="start center" class="ml-4 mt-16">
+                                        <mat-form-field appearance="outline" fxFlex="70" class="mb-8">
+                                            <mat-label>Tap Url<span class="red-400-fg">*</span></mat-label>
+                                            <input type="text" matInput value="{{ badge.link }}" #tap/>
+                                        </mat-form-field>
+                                        <div fxFlex="30" fxLayoutAlign="start center" style="margin-top:-30px;">
+                                            <button fxFlex="100" type="button" mat-raised-button 
+                                                class="save-badge-button ml-4" color="accent" (click)="onCopyLink(tap)">
+                                                <span>Copy Link</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h1>Rewards Integration Settings</h1>
+                                        <div formGroupName="meta">
+                                            <div fxLayout="column" >
+                                                <mat-form-field appearance="outline" fxFlex="100" class="no-bottom">
+                                                    <mat-label>Select Event</mat-label>
+                                                    <mat-select formControlName="rewards_event_id" (selectionChange)="onChangeSelect($event)">
+                                                        <mat-option value="">Select Event</mat-option>
+                                                        <mat-option *ngFor="let event of rewardsEvents" [value]="event?.event_id">{{ event?.title }}</mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+                                                <mat-error *ngIf="!eventStatus">
+                                                    Event has already expired
+                                                </mat-error>
+                                            </div>
+                                            <div class="pt-20">
+                                                <mat-radio-group aria-label="Select an option" formControlName="rewards_setting" 
+                                                    [disabled]="!badgeForm.controls['meta']['controls']['rewards_event_id']?.value">
+                                                    <mat-radio-button [disabled]="badge?.checklist === 'yes'" 
+                                                        value="staff_to_earn_badge_after_qr_scan" name="setting">Staff to earn badge after scanning QR code</mat-radio-button>
+                                                    <mat-radio-button value="staff_to_receive_dreampoints_after_acquiring_a_badge" 
+                                                        name="setting">Staff to receive dreampoints after acquiring a badge</mat-radio-button>
+                                                </mat-radio-group>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </mat-tab>
+
+                    <mat-tab *ngIf='false' label="Integrations">
+                        <div class="tab-content p-24" fusePerfectScrollbar>
+                            <div class="integration-box info-box general">
+                                <header class="integration-header accent">
+                                    <div class="title">Integrations</div>
+                                </header>
+
+                                <div class="content ml-8">
+                                    <div fxLayout="row" fxLayoutAlign="start center">
+                                        <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="35">
+                                            <div fxLayout="row" fxLayoutAlign="start center">
+                                                <h2 fxFlex="30" class="text-truncate">
+                                                    Uberticket
+                                                </h2>
+                                                <mat-slide-toggle fxFlex="5" apperance="outline"
+                                                    class="slide-toggle-button mb-32"
+                                                    (change)="toggleUberticket($event)"
+                                                    formControlName="ubt_toggle_status">
+                                                </mat-slide-toggle>
+                                            </div>
+
+                                            <div fxLayout="row" fxLayoutAlign="start center">
+                                                <mat-form-field appearance="outline" fxFlex="90" class="pl-4">
+                                                    <mat-label>Reference Code<span class="red-400-fg"
+                                                            *ngIf="badgeForm.controls['ubt_toggle_status'].value === true">*</span>
+                                                    </mat-label>
+                                                    <input type="text" matInput formControlName="template_id"/>
+                                                </mat-form-field>
+                                            </div>
+
+                                            <div fxLayout="row" fxLayoutAlign="start center">
+                                                <mat-form-field appearance="outline" fxFlex="90" class="pl-4">
+                                                    <mat-label>Status<span class="red-400-fg"
+                                                            *ngIf="badgeForm.controls['ubt_toggle_status'].value === true">*</span>
+                                                    </mat-label>
+                                                    <mat-select formControlName="template_status">
+                                                        <mat-option value="new">New</mat-option>
+                                                        <mat-option value="resolved">Resolved</mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+                                            </div>
+                                        </div>
+                                        <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="40" class="mb-80">
+                                            <div fxLayout="row" fxLayoutAlign="start center">
+                                                <h2 fxFlex="30" class="text-truncate">
+                                                    Player One
+                                                </h2>
+                                                <mat-slide-toggle fxFlex="5" apperance="outline"
+                                                    class="slide-toggle-button mb-32" (change)="togglePlayerOne($event)"
+                                                    formControlName="player_one_toggle_status">
+                                                </mat-slide-toggle>
+                                            </div>
+
+                                            <div fxLayout="row" fxLayoutAlign="start center">
+                                                <mat-form-field appearance="outline" fxFlex="90" class="pl-4">
+                                                    <mat-label>Select Quiz ID/Name<span class="red-400-fg"
+                                                            *ngIf="badgeForm.controls['player_one_toggle_status'].value === true">*</span>
+                                                    </mat-label>
+                                                    <mat-select formControlName="public_id">
+                                                        <mat-option *ngFor="let quiz of quizzes" [value]="quiz.id">
+
+                                                            {{ quiz?.name }}
+                                                        </mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <p style="font-style: italic;"> Please make sure to set the correct integration
+                                        settings in
+                                        <a
+                                            href='https://docs.google.com/document/d/1DCHmytk1-Kr-aQ-aN_9fD0QgpohFk0odV9rm1KHV3iU/edit?usp=sharing'>
+                                            Uberticket
+                                        </a>
+                                        or in
+                                        <a
+                                            href='https://docs.google.com/document/d/1UHrE6IyzOlPwmylUOlFaoZg7HloMOG1KkkmHSuBrqqg/edit?usp=sharing'>
+                                            Player One.
+                                        </a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </mat-tab>
+                    <mat-tab *ngIf="pageType === 'edit' && badge?.id" label="Email Notifications">
+                        <div class="tab-content p-24" fusePerfectScrollbar>
+                            <div class="notification-box info-box general">
+                                <div class="content ml-8">
+                                    <div fxLayout="row" fxLayoutAlign="space-between"
+                                        fxLayoutGap="20px">
+                                        <div fxFlex.gt-sm="75" fxFlex="100" fxFill>
+                                            <mat-tab-group mat-align-tabs="start" class="email-notif">
+                                                <mat-tab label="New Badge" [formGroup]="newBadgeNotifForm">
+                                                    <p class="py-16 secondary-text">User recipients get notified with
+                                                        this message when they received a badge</p>
+                                                    <mat-form-field appearance="outline">
+                                                        <mat-label>Subject</mat-label>
+                                                        <input type="text" maxlength="40" matInput
+                                                            placeholder="Subject Of Email:"
+                                                            formControlName="subject"/>
+                                                    </mat-form-field>
+                                                    <div class="editor">
+                                                        <ngx-editor-menu [editor]="NewBadgeEditor" [toolbar]="toolbar">
+                                                        </ngx-editor-menu>
+                                                        <ngx-editor [editor]="NewBadgeEditor" matInput
+                                                            placeholder="Message Of Email:"
+                                                            formControlName="message"></ngx-editor>
+                                                    </div>
+                                                </mat-tab>
+                                                <mat-tab label="Soon to Expire Badge"
+                                                    [formGroup]="soonToExpireNotifForm">
+                                                    <p class="py-16 secondary-text">User recipients get notified with
+                                                        this message when a badge is soon to expire</p>
+                                                    <mat-form-field appearance="outline">
+                                                        <mat-label>Subject</mat-label>
+                                                        <input type="text" maxlength="40" matInput
+                                                            placeholder="Subject Of Email:"
+                                                            formControlName="subject" />
+                                                    </mat-form-field>
+                                                    <div class="editor">
+                                                        <ngx-editor-menu [editor]="SoonToExpireEditor"
+                                                            [toolbar]="toolbar">
+                                                        </ngx-editor-menu>
+                                                        <ngx-editor [editor]="SoonToExpireEditor" matInput
+                                                            placeholder="Message Of Email:"
+                                                            formControlName="message"></ngx-editor>
+                                                    </div>
+                                                </mat-tab>
+                                                <mat-tab label="Expired Badge" [formGroup]="expiredBadgeNotifForm">
+                                                    <p class="py-16 secondary-text">User recipients get notified with
+                                                        this message when a badge is expired</p>
+                                                    <mat-form-field appearance="outline">
+                                                        <mat-label>Subject</mat-label>
+                                                        <input type="text" maxlength="40" matInput
+                                                            placeholder="Subject Of Email:"
+                                                            formControlName="subject" />
+                                                    </mat-form-field>
+                                                    <div class="editor">
+                                                        <ngx-editor-menu [editor]="ExpiredEditor" [toolbar]="toolbar">
+                                                        </ngx-editor-menu>
+                                                        <ngx-editor [editor]="ExpiredEditor" matInput
+                                                            placeholder="Message Of Email:"
+                                                            formControlName="message"></ngx-editor>
+                                                    </div>
+                                                </mat-tab>
+                                                <mat-tab label="Removed Badge" [formGroup]="removedBadgeNotifForm"
+                                                            placeholder="Message Of Email:" formControlName="message">
+                                                    <p class="py-16 secondary-text">User recipients get notified with
+                                                        this message when a badge is removed</p>
+                                                    <mat-form-field appearance="outline">
+                                                        <mat-label>Subject</mat-label>
+                                                        <input type="text" maxlength="40" matInput
+                                                            placeholder="Subject Of Email:"
+                                                            formControlName="subject" />
+                                                    </mat-form-field>
+                                                    <div class="editor">
+                                                        <ngx-editor-menu [editor]="RemovedbadgeEditor"
+                                                            [toolbar]="toolbar">
+                                                        </ngx-editor-menu>
+                                                        <ngx-editor [editor]="RemovedbadgeEditor" matInput
+                                                            placeholder="Message Of Email:"
+                                                            formControlName="message"></ngx-editor>
+                                                    </div>
+                                                </mat-tab>
+                                            </mat-tab-group>
+                                        </div>
+
+                                        <div class="merge-fields" fxFlex.gt-sm="25" fxFlex="100">
+                                            <h5> <span> Badge Data </span> </h5>
+                                                <ul *ngFor="let field of badgeMergeCodes">
+                                                    <li>{{ field?.label }} - {{ field?.description }}</li>
+                                                </ul>
+
+                                                <h5> <span> Issued Badge Data </span> </h5>
+                                                <ul *ngFor="let field of issuedBadgeMergeCodes">
+                                                    <li>{{ field?.label }} - {{ field?.description }}</li>
+                                                </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </mat-tab>
+
+                    <mat-tab *ngIf="pageType === 'edit' && badge?.id" label="Checklist">
+                        <div class="tab-content p-24" fusePerfectScrollbar>
+                            <div>
+                                <badges-form-checklist [badgeId]='badge?.id'></badges-form-checklist>
+                            </div>
+                        </div>
+                    </mat-tab>
+
+                    <mat-tab *ngIf="pageType === 'edit' && badge?.id" label="Issue">
+                        <div class="tab-content p-24" fusePerfectScrollbar>
+                            <div>
+                                <badges-form-claimed [hasChecklist]="isChecklist" [users]="users"></badges-form-claimed>
+                            </div>
+                        </div>
+                    </mat-tab>
+                </mat-tab-group>
+            </form>
+        </div>
+    </div>
+</ng-container>

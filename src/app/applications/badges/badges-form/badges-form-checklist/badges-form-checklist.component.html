@@ -1,0 +1,93 @@
+<mat-table #table [dataSource]="checkListSource" matSort class="mat-elevation-z1 badge-checklist-table"
+    fusePerfectScrollbar>
+    <ng-container matColumnDef="title">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Title </mat-header-cell>
+        <mat-cell *matCellDef="let checklist">{{ checklist?.title }} </mat-cell>
+        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+    </ng-container>
+    <ng-container matColumnDef="description">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Description </mat-header-cell>
+        <mat-cell *matCellDef="let checklist" [innerHTML]="checklist?.description"></mat-cell>
+        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+    </ng-container>
+    <ng-container matColumnDef="type">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Type </mat-header-cell>
+        <mat-cell *matCellDef="let checklist">
+            <p>
+                {{ checklist?.type }}
+            </p>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef>
+            <button type="button" mat-raised-button class="add-item-button" (click)="onOpenDialogDelete('add', '', '')">
+                <span> ADD ITEM </span>
+            </button>
+        </mat-footer-cell>
+    </ng-container>
+    <ng-container matColumnDef="settings">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Settings </mat-header-cell>
+        <mat-cell *matCellDef="let checklist">
+            <p *ngIf="checklist?.type === 'Ubertickets'">
+                Reference Code: {{ checklist?.ubt_template_id }}
+                <br>
+                Status: {{ checklist?.ubt_template_status | titlecase }}
+                <br>
+                Link: <a target="_blank" href="{{ checklist?.integration_link }}">Uberticket</a>
+            </p>
+            <div *ngIf="checklist?.type === 'PlayerOne'">
+               <div *ngFor= "let quiz of current_badge_quizzes">
+                    <p *ngIf="quiz?.id === checklist?.player_one_public_id">
+                        Quiz Name: {{ quiz?.name }}
+                        <br>
+                        Link: <a target="_blank" href="{{ checklist?.integration_link }}?user={{ encode_email }}">PlayerOne</a>
+                    </p>
+               </div>
+            </div>
+            <div *ngIf="checklist?.type == 'Badge Prerequisite'">
+                <div *ngFor= "let prereq of current_badge_prereq">
+                    <p *ngIf="prereq?.id === checklist?.badge_prerequisite_id">
+                        Badge Name: {{ prereq?.name }}
+                    </p>
+                </div>
+            </div>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+    </ng-container>
+    <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Actions </mat-header-cell>
+        <mat-cell *matCellDef="let checklist">
+            <span class="edit-icon">
+                <mat-icon (click)="onOpenDialogDelete('edit', checklist?.id, checklist?.type)"> edit </mat-icon>
+            </span>
+            <span>
+                <mat-icon class="active-icon red-500 s-25" (click)="onOpenDialogDelete('delete', checklist?.id, checklist?.type, checklist?.title)"> close
+                </mat-icon>
+            </span>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+    </ng-container>
+    <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    <mat-footer-row *matFooterRowDef="displayedColumns" colspan="2"></mat-footer-row>
+</mat-table>
+<div id="block_container">
+    <div id="pagination">
+        <p style="font-style: italic;"> Please make sure to set the correct integration
+            settings in
+            <a
+                href='https://docs.google.com/document/d/1DCHmytk1-Kr-aQ-aN_9fD0QgpohFk0odV9rm1KHV3iU/edit?usp=sharing'>
+                Uberticket
+            </a>
+            or in
+            <a
+                href='https://docs.google.com/document/d/1UHrE6IyzOlPwmylUOlFaoZg7HloMOG1KkkmHSuBrqqg/edit?usp=sharing'>
+                Player One.
+            </a>
+        </p>
+    </div>  
+    <div id="pagination">
+        <mat-paginator #paginator class="w-100-p" [length]="checkListSource?.paginator" [pageIndex]="0" [pageSize]="10"
+            [pageSizeOptions]="[10, 25, 50, 100]">
+        </mat-paginator>
+    </div>
+</div>
+

@@ -1,0 +1,92 @@
+
+<div class="header accent p-24 pb-0" fxLayout="column" fxLayoutAlign="space-between">
+    <div fxLayout="row" fxLayoutAlign="space-between start">
+        <span class="mat-display-1 my-0 my-sm-24 welcome-message" [@animate]="{value:'*',params:{x:'50px'}}">Welcome
+            back, {{ auth?.username | uppercase }}!
+        </span>
+        <span fxFlex></span>
+        <mat-form-field class="w-120 mt-20">
+            <mat-label>Filter Label</mat-label>
+            <mat-select value='all' (selectionChange)="onSelectLabel($event)">
+                <mat-option value='all'> All </mat-option>
+                <mat-option *ngFor="let label of listLabels" [value]="label.id">
+                    {{ label.name | titlecase }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <div class="search-wrapper mx-32 mx-md-32 mt-16" fxHide.lt-sm>
+
+            <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon>search</mat-icon>
+                <input #filter [(ngModel)]="filterValue" (keyup)="onSearchFilter($event)"
+                    placeholder="Search for a Badge" />
+                <mat-icon class="btn-filter-list">filter_list</mat-icon>
+            </div>
+        </div>
+    </div>
+    <div fxLayout="row">
+        <div class="selected">Badge Board</div>
+    </div>
+</div>
+
+<div class="content">
+    <div class="p-24" fxLayout="row wrap" fxFlex="100" [@animateStagger]="{value:'50'}">
+        <fuse-widget class="badge-widgets" fxLayout="column" fxFlex="100" fxFlex.gt-xs="50" fxFlex.gt-sm="25"
+            fxFlex.gt-md="16.6" *ngFor="let board of boards">
+            <div class="fuse-widget-front mat-elevation-z2" [routerLink]="['../boards', board.id, 'view']">
+                <div class="pl-32 pr-32 py-16 h-188"
+                    style="text-align: center; position: relative;line-height: 120%; overflow: hidden;">
+                    <p>
+                        <img class="w-160 h-160"
+                            src="{{ board?.meta?.image || 'assets/images/logos/badgepack-logo-2021.png' }}"
+                            onerror="this.src='assets/images/logos/badge.png';" />
+                    </p>
+                    <button mat-icon-button fuseWidgetToggle aria-label="more"
+                        style="position: absolute; top:10%; right:0;">
+                        <mat-icon>info</mat-icon>
+                    </button>
+                    <span class="claims-count mr-8 pr-4 pl-4 mb-4 text-bold"
+                        style="position: absolute; top:15%; left:0;" matTooltip="Number of issued users"
+                        matTooltipPosition="above">
+                        {{ board?.active }}
+                    </span>
+                </div>
+                <div fxLayout="column" fxLayoutAlign="center center">
+                    <div class="mat-title accent-800-fg pl-16 pr-16" style="text-align: center">{{ board?.name }}</div>
+
+                    <p style="margin:0;" *ngIf='board.badge_id' class="text-truncate"> BG-{{ board?.badge_id }}</p>
+                </div>
+                <div class="px-16 py-4 border-top" style="text-align: center;">
+                    <div class="labels">
+                        <ng-container *ngFor="let label of board.labels; index as i">
+                            <small class="text-boxed mr-0 ml-8 pl-4 pr-4 rounded" *ngIf="i <= 8">
+                                <strong matTooltip="{{ label?.name}}" matTooltipPosition="above">{{ label.name
+                                    }}</strong>
+                            </small>
+                            <small class="mr-0 ml-8 pl-4 pr-4" *ngIf="i === 9">
+                                <strong matTooltip="{{ board?.etcLabels}}" matTooltipPosition="above">...</strong>
+                            </small>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+            <div class="fuse-widget-back p-16 pt-32 mat-elevation-z2">
+                <button mat-icon-button fuseWidgetToggle class="fuse-widget-flip-button" aria-label="Flip widget">
+                    <mat-icon class="s-16">close</mat-icon>
+                </button>
+                <div style="text-align: center;" class="badge-content">
+                    <p class="text-wrap" [innerHTML]="truncateChar(board?.description)"></p>
+                    <p *ngIf="board?.description?.length" class="see-more" (click)="onOpenDialog(
+                                board?.description
+                                )">See more
+                    </p>
+                </div>
+            </div>
+        </fuse-widget>
+    </div>
+    <div class="mt-256" style="text-align: center;" *ngIf="boards.length === 0">
+        <p style="font-size: 30px">
+            NO RESULTS FOUND!
+        </p>
+    </div>
+</div>

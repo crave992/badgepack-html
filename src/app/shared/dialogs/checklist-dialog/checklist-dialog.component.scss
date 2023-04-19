@@ -1,0 +1,46 @@
+.task-header {
+  padding: 0 5px;
+  height: 20px;
+}
+
+.fx-spacer {
+  flex: 1 1 auto;
+  background-color: none !important;
+}
+
+.mat-toolbar.task-header {
+  background: white !important;
+}
+
+input[type="checkbox"].issued {
+  -webkit-appearance: initial;
+  appearance: initial;
+  width: 20px;
+  height: 20px;
+  border: none;
+  position: relative;
+}
+
+input[type="checkbox"].issued:checked {
+  background: orange;
+  outline: 0px solid gray !important;
+}
+
+input[type="checkbox"].issued:checked:after {
+  content: "✔";
+  color: white;
+}
+
+input[type="checkbox"]:checked:after {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+input[type="checkbox"] {
+  outline: 1px solid gray !important;
+}

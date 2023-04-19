@@ -1,0 +1,58 @@
+::ng-deep .mat-checkbox-layout {
+  white-space: normal !important;
+}
+
+::ng-deep .mat-checkbox-inner-container {
+  margin-top: 3px !important;
+}
+
+.title {
+  display: inline-block;
+  overflow-wrap: anywhere;
+  vertical-align: text-top;
+}
+
+.see-more {
+  color: #00897b;
+}
+
+.see-more:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.content {
+  max-height: 189px !important;
+  overflow: hidden;
+}
+
+.mat-expanded mat-panel-title {
+  display: none;
+}
+
+.mat-content {
+  max-height: 44px !important;
+}
+
+.mat-expansion-panel-header:not([aria-disabled=true]){
+  height: 50px !important;
+}
+
+.search-badge{
+  height: 50px;
+}
+
+.search input
+{
+  width: 90%;
+}
+
+.search {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.filters {
+  margin-bottom: 1%;;
+}

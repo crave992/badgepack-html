@@ -1,0 +1,42 @@
+<div id="groups" class="page-layout carded left-sidebar tabbed inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- SIDEBAR -->
+    <fuse-sidebar class="sidebar" name="groups" position="left" lockedOpen="gt-md">
+        <!-- SIDEBAR HEADER -->
+        <div class="center">
+            <div class="header accent p-32 header-right" fxLayout="column" fxLayoutAlign="center center"
+                fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+                <!-- APP TITLE -->
+                <div class="logo mb-24 mb-md-0" fxLayout="row" fxLayoutAlign="center center">
+                    <mat-icon class="logo-icon s-32 mr-16" [@animate]="{
+                        value: '*',
+                        params: { delay: '50ms', scale: '0.2' }
+                    }">
+                        people
+                    </mat-icon>
+                    <span class="logo-text h1" [@animate]="{
+                        value: '*',
+                        params: { delay: '100ms', x: '-25px' }
+                    }">
+                        Groups
+                    </span>
+                </div>
+                <!-- / APP TITLE -->
+            </div>
+        </div>
+
+        <!-- / SIDEBAR HEADER -->
+
+        <!-- SIDEBAR CONTENT -->
+        <groups-main-sidebar></groups-main-sidebar>
+        <!-- / SIDEBAR CONTENT -->
+    </fuse-sidebar>
+    <!-- / SIDEBAR -->
+
+    <!-- CENTER -->
+    <router-outlet></router-outlet>
+    <!-- / CENTER -->
+</div>

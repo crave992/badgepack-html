@@ -1,0 +1,29 @@
+<body id="my-profile" class="inner-scroll" fxLayout="row" (click)="redirect()" fxLayoutAlign="center center">
+    <div id="container" fxLayoutAlign="center center" fxFlexFill>
+        <mat-card>
+            <div class="header">
+                <div class="row" fxLayoutAlign="center center">
+                    <img class="profile-pic" src="{{login?.meta?.image }}">
+                    <img class="qrcode"
+                        src="https://www.kaspersky.com/content/en-global/images/repository/isc/2020/9910/a-guide-to-qr-codes-and-how-to-scan-qr-codes-2.png">
+                </div>
+                <div class="row" fxLayoutAlign="center center">
+                    <p class="csid" style="position: relative;z-index: 9999;"> {{login?.code}} </p>
+                </div>
+            </div>
+            <div class="name">
+                <p class="username"> {{login?.username}} </p>
+                <p class="full-name"> {{login?.name}} </p>
+            </div>
+            <div class="viewport-lg">
+                <div class="row container" fxLayoutAlign="center center">
+                    <p class="badges-lg" *ngFor="let badge of badges" matTooltip="{{ badge?.badge?.name }}"
+                        matTooltipPosition="above"> <img class="badge-icon"
+                            src="{{badge?.badge?.meta?.image || 'assets/images/logos/badgepack-logo-2021.png'}}">
+                          <span style="font-size:12px; padding-left: 20px;"> BI-{{badge?.claim_id}}</span>  
+                    </p>
+                </div>
+            </div>
+        </mat-card>
+    </div>
+</body>

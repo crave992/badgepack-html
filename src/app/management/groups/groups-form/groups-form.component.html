@@ -1,0 +1,128 @@
+<ng-container *ngIf="(group$ | async) as group">
+    <!-- HEADER -->
+    <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
+
+        <!-- APP TITLE -->
+        <div fxLayout="row" fxLayoutAlign="start center">
+
+            <button mat-icon-button class="mr-0 mr-sm-16" [routerLink]="'/groups'">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+
+            <div class="group-image mr-8 mr-sm-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                <img class="avatar" [src]="group?.meta?.image">
+            </div>
+
+            <div fxLayout="column" fxLayoutAlign="start start"
+                [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                <div class="h2">
+                    {{ group.name || 'New Group' }}
+                </div>
+                <div class="subtitle secondary-text">
+                    <span>{{ group.description }} &nbsp;</span>
+                </div>
+            </div>
+        </div>
+        <!-- / APP TITLE -->
+
+        <div>
+            <button mat-raised-button class="save-group-button" [disabled]="groupForm.invalid" *ngIf="pageType ==='new'" (click)="onSubmit()">
+                <span>ADD GROUP</span>
+            </button>
+
+            <button mat-raised-button class="save-group-button" [disabled]="groupForm.invalid && groupForm.pristine"
+                *ngIf="pageType ==='edit'" (click)="onSubmit()">
+                <span>UPDATE</span>
+            </button>
+
+            <button mat-raised-button class="save-group-button ml-8"  color="warn"
+                *ngIf="pageType ==='edit'" (click)="openDialog('delete')">
+                <span>DELETE</span>
+            </button>
+        </div>
+
+    </div>
+    <!-- / HEADER -->
+
+    <!-- CONTENT CARD -->
+    <div class="content-card">
+        <div class="content">
+            <form name="groupForm" [formGroup]="groupForm" (submit)="onSubmit()" class="group w-100-p" fxLayout="column" fxFlex>
+
+                <mat-tab-group>
+
+                    <mat-tab label="Details">
+
+                        <div class="tab-content p-24" fusePerfectScrollbar>
+                            <div>
+                                <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="70"  class="pr-8">
+
+                                    <div fxLayout="row" fxLayoutAlign="start center"
+                                        fxFlex="1 0 auto">
+                                        <mat-form-field appearance="outline" fxFlex="100" class="pl-4">
+                                            <mat-label>Name<span class="red-400-fg">*</span></mat-label>
+                                            <input type="text" matInput formControlName="name">
+                                        </mat-form-field>
+                                    </div>
+
+                                    <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                                        <mat-form-field appearance="outline" fxFlex="50" class="pr-4">
+                                            <mat-label>Reference Code<span class="red-400-fg">*</span></mat-label>
+                                            <input class="text-uppercase" type="text" matInput formControlName="code" maxlength="36">
+                                        </mat-form-field>
+
+                                        <mat-form-field fxFlex="50" appearance="outline" class="pl-4">
+                                            <mat-label>Status<span class="red-400-fg">*</span></mat-label>
+                                            <mat-select formControlName="status">
+                                                <mat-option value="active">Active</mat-option>
+                                                <mat-option value="inactive">Inactive</mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+
+                                    <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                                        <mat-form-field appearance="outline" fxFlex="100">
+                                            <mat-label>Description</mat-label>
+                                            <textarea rows="4" matInput formControlName="description"></textarea>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+
+                                <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="30" class="pl-8">
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </mat-tab>
+
+                    <mat-tab *ngIf="pageType === 'edit' && group.id" label="Members">
+
+                        <div class="tab-content p-24" fusePerfectScrollbar>
+                            <div>
+                                <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="70">
+                                    <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto" *ngIf="group.users.length !== 0">
+                                        <mat-form-field appearance="outline" fxFlex="100" class="pr-4" >
+                                            <mat-label>Users ({{group.users.length}})</mat-label>
+                                            <mat-chip-list class="mat-chip-list" aria-label="Color selection">
+                                                <mat-chip *ngFor="let user of group.users" selected>
+                                                  {{ user.username | uppercase}}
+                                                </mat-chip>
+                                            </mat-chip-list>
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto" *ngIf="group.users.length === 0">
+                                        <mat-label>No Users Found!</mat-label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </mat-tab>
+
+                </mat-tab-group>
+
+            </form>
+        </div>
+    </div>
+    <!-- / CONTENT CARD -->
+</ng-container>

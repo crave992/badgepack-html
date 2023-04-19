@@ -1,0 +1,136 @@
+<div class="content">
+    <h4 mat-dialog-title>
+        <mat-toolbar role="toolbar" class="task-header" mat-dialog-close>
+            <h1 *ngIf="description">Description</h1>
+            <h1 *ngIf="checklists?.length && !description">Checklist</h1>
+            <span class="fx-spacer"></span>
+            <button mat-icon-button>
+                <mat-icon mat-list-icon>close</mat-icon>
+            </button>
+        </mat-toolbar>
+    </h4>
+    <mat-dialog-content>
+        <div fxLayout="column" fxLayoutAlign="start stretch">
+            <p class="text-wrap" [innerHTML]="description"></p>
+        </div>
+        <div *ngIf="checklists?.length">
+            <div>
+                <h1 *ngIf="description">Checklist</h1>
+                <div *ngFor="let checklist of checklists">
+                    <div *ngIf="type !== 'available'" class="mb-20">
+                        <mat-expansion-panel hideToggle class="checklist-card">
+                            <mat-expansion-panel-header [collapsedHeight]="customCollapsedHeight" [expandedHeight]="customExpandedHeight">
+                            <mat-panel-title>
+                                <mat-checkbox *ngIf="checklist?.deleted_at === null"
+                                    (change)="onOpenDialog(null, checklist, type, 'checklist', checklists, $event)"
+                                    (click)="$event.stopPropagation()" 
+                                    (keydown)="$event.stopPropagation()"
+                                    [disabled]="(checklist?.checklist_info?.meta?.allow_user !== true
+                                        || checkedItems.includes(checklist?.checklist_id))
+                                        || type === 'acquired'"
+                                    (click)="deselectChecklistMessage(checkedItems.includes(checklist?.checklist_id), checklist, checklists)"
+                                    [checked]="checklist?.is_checked === 'yes' 
+                                        || checkedItems.includes(checklist?.checklist_id)"
+                                    [ngClass]="checklist?.meta?.is_manually_ticked === 'no' ? 'integration' : 'manual'">
+                                    <img class="w-48 h-48 logo" *ngIf="checklist?.checklist_info?.type === 'Badge Prerequisite'"
+                                        src="{{ checklist?.checklist_info?.meta?.image || 'assets/images/logos/badgepack-logo-2021.png' }}"
+                                        onerror="this.src='assets/images/logos/badgepack-logo-2021.png';"/>
+                                    <img class="w-48 h-48 logo" *ngIf="checklist?.checklist_info?.type === 'Manual'"
+                                        src="assets/images/logos/manual-checklist.png"
+                                        onerror="this.src='assets/images/logos/badgepack-logo-2021.png';"/>
+                                    <img class="w-48 h-48 logo" *ngIf="checklist?.checklist_info?.type === 'PlayerOne'"
+                                        src="assets/images/logos/playerone.png"
+                                        onerror="this.src='assets/images/logos/playerone.png';"/>
+                                    <img class="w-48 h-48 logo" *ngIf="checklist?.checklist_info?.type === 'Ubertickets'"
+                                        src="assets/images/logos/uberticket.png"
+                                        onerror="this.src='assets/images/logos/uberticket.png';"/>
+                                    <span *ngIf="checklist?.checklist_info?.integration_link !== null" class="title">
+                                    <a target="_blank" href="{{ checklist?.checklist_info?.integration_link }}">{{
+                                            checklist?.checklist_info?.title }}</a>
+                                    </span>
+                                    <span *ngIf="checklist?.checklist_info?.integration_link === null" class="title">
+                                        {{ checklist?.checklist_info?.title }}
+                                    </span>
+                                </mat-checkbox>
+                                <mat-checkbox class="deleted" *ngIf="checklist?.deleted_at !== null"
+                                    (change)="onOpenDialog(null, checklist, type, 'checklist', checklists, $event)"
+                                    (click)="$event.stopPropagation()" 
+                                    (keydown)="$event.stopPropagation()"
+                                    [disabled]="(checklist?.checklist_info?.meta?.allow_user !== true
+                                        || checkedItems.includes(checklist?.checklist_id))
+                                        || type === 'acquired'"
+                                    (click)="deselectChecklistMessage(checkedItems.includes(checklist?.checklist_id), checklist, checklists)"
+                                    [checked]="checklist?.is_checked === 'yes' 
+                                        || checkedItems.includes(checklist?.checklist_id)">
+                                    <img class="w-48 h-48 logo" *ngIf="checklist?.checklist_info?.type === 'Badge Prerequisite'"
+                                        src="{{ checklist?.checklist_info?.meta?.image || 'assets/images/logos/badgepack-logo-2021.png' }}"
+                                        onerror="this.src='assets/images/logos/badgepack-logo-2021.png';"/>
+                                    <img class="w-48 h-48 logo" *ngIf="checklist?.checklist_info?.type === 'Manual'"
+                                        src="assets/images/logos/manual-checklist.png"
+                                        onerror="this.src='assets/images/logos/badgepack-logo-2021.png';"/>
+                                    <img class="w-48 h-48 logo" *ngIf="checklist?.checklist_info?.type === 'PlayerOne'"
+                                        src="assets/images/logos/playerone.png"
+                                        onerror="this.src='assets/images/logos/playerone.png';"/>
+                                    <img class="w-48 h-48 logo" *ngIf="checklist?.checklist_info?.type === 'Ubertickets'"
+                                        src="assets/images/logos/uberticket.png"
+                                        onerror="this.src='assets/images/logos/uberticket.png';"/>
+                                    <span *ngIf="checklist?.checklist_info?.integration_link !== null" class="title">
+                                    <a target="_blank" href="{{ checklist?.checklist_info?.integration_link }}">{{
+                                            checklist?.checklist_info?.title }}</a>
+                                    </span>
+                                    <span *ngIf="checklist?.checklist_info?.integration_link === null" class="title">
+                                        {{ checklist?.checklist_info?.title }}
+                                    </span>
+                                </mat-checkbox>
+                            </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div [innerHTML]="checklist?.checklist_info?.description"></div>
+                        </mat-expansion-panel>
+                    </div>
+                    <div *ngIf="type === 'available'" class="mb-20">
+                        <mat-expansion-panel hideToggle class="checklist-card">
+                            <mat-expansion-panel-header [collapsedHeight]="customCollapsedHeight" [expandedHeight]="customExpandedHeight">
+                              <mat-panel-title>
+                                <mat-checkbox *ngIf="(checklist?.deleted_at=== null)"
+                                    (change)="onOpenDialog(null, checklist, type, 'checklist', checklists, $event)"
+                                    (click)="$event.stopPropagation()" 
+                                    (keydown)="$event.stopPropagation()"
+                                    [disabled]="checklist?.meta?.allow_user !== true">
+                                    <img class="w-48 h-48 logo" *ngIf="checklist?.type === 'Badge Prerequisite'"
+                                        src="{{ checklist?.meta?.image || 'assets/images/logos/badgepack-logo-2021.png' }}"
+                                        onerror="this.src='assets/images/logos/badgepack-logo-2021.png';"/>
+                                    <img class="w-48 h-48 logo" *ngIf="checklist?.type === 'Manual'"
+                                        src="assets/images/logos/manual-checklist.png"
+                                        onerror="this.src='assets/images/logos/badgepack-logo-2021.png';"/>
+                                    <img class="w-48 h-48 logo" *ngIf="checklist?.type === 'PlayerOne'"
+                                        src="assets/images/logos/playerone.png"
+                                        onerror="this.src='assets/images/logos/playerone.png';"/>
+                                    <img class="w-48 h-48 logo" *ngIf="checklist?.type === 'Ubertickets'"
+                                        src="assets/images/logos/uberticket.png"
+                                        onerror="this.src='assets/images/logos/uberticket.png';"/>
+                                    <span *ngIf="checklist?.integration_link !== null" class="title">
+                                        <a target="_blank" href="{{ checklist?.integration_link }}">{{
+                                            checklist?.title }}</a>
+                                    </span>
+                                    <span *ngIf="checklist?.integration_link === null" class="title">
+                                        {{ checklist?.title }}
+                                    </span>
+                                </mat-checkbox>
+                              </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div [innerHTML]="checklist?.description"></div>
+                        </mat-expansion-panel>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end" class="pb-20">
+        <div fxLayout="row" fxLayoutAlign="center start" fxFlex="1 0 auto">
+            <div fxLayout="row" fxLayoutAlign="end center" fxFlex="1 0 auto">
+                <button mat-raised-button mat-dialog-close>{{ cancelText
+                    }}</button>
+            </div>
+        </div>
+    </mat-dialog-actions>
+</div>

@@ -1,0 +1,65 @@
+<div class="p-24" fxLayout="row wrap" fxFlex="100" [@animateStagger]="{value:'50'}" >
+    <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100">
+        <mat-form-field appearance="outline" class="label-form">
+        <mat-label>Labels</mat-label>
+        <mat-chip-list #labelList aria-label="Group selection">
+            <mat-chip *ngFor="let label of labels" [selectable]="selectableLabels" [removable]="removableLabels"
+                (removed)="removeExpiredLabel(label)" >
+                {{ label?.name }}
+                <mat-icon matChipRemove *ngIf="removableLabels">cancel</mat-icon>
+            </mat-chip>
+            <input #labelInput [formControl]="labelCtrl"
+                [matAutocomplete]="labelAuto" [matChipInputFor]="labelList" (click)="addLabel($event)">
+        </mat-chip-list>
+        <mat-autocomplete #labelAuto="matAutocomplete" (optionSelected)="selectedExpiredLabel($event)">
+            <mat-option *ngFor="let displayLabel of displayLabels" [value]="displayLabel">
+                {{ displayLabel?.name }}
+            </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+    <fuse-widget class="my-badge-expired" fxLayout="column" fxFlex="100" fxFlex.gt-xs="25" fxFlex.gt-md="20" *ngFor="let expire of expires">
+        <div class="fuse-widget-front mat-elevation-z2">
+            <div class="pl-32 pr-32 py-16 h-188" style="text-align: center; position: relative;">
+                <p>   <img class="w-160 h-160"  src="{{expire?.badge?.meta?.image || 'assets/images/logos/badgepack-logo-2021.png'}}"
+                    onerror="this.src='assets/images/logos/badge.png';" /> </p>
+
+                <button mat-icon-button fuseWidgetToggle aria-label="more" style="position: absolute; top:10px; right:0;">
+                    <mat-icon>info</mat-icon>
+                </button>
+            </div>
+
+            <div class="pt-8 pb-8" fxLayout="column" fxLayoutAlign="center center">
+                    <div class="mat-headline accent-800-fg pl-8 pr-8" style="text-align: center">{{ expire?.badge?.name }}</div>
+
+                    <p style="margin:0;" *ngIf='expire?.claim_id' class="text-truncate"> BI-{{expire?.claim_id}}</p>
+                    <p  style="font-size:10px;" class="text-truncate" matTooltip="{{ expire.expired_at | tzDate:'DD-MMM-YY HH:mm' }}" matTooltipPosition="above">
+                        Expired <span>{{ expire.expired_at | tzDate:'ago' | lowercase }}</span>
+                    </p>
+            </div>
+            <div class="px-16 py-4 border-top" style="text-align: center">
+                <div class= "labels">
+                    <ng-container *ngFor="let label of expire?.badge?.labels; index as i">
+                      <small class="text-boxed mr-0 ml-8 pl-4 pr-4 rounded" *ngIf="i <= 8">
+                         <strong matTooltip="{{ label?.name}}" matTooltipPosition="above">{{ label.name }}</strong>
+                       </small>
+                       <small class="mr-0 ml-8 pl-4 pr-4" *ngIf="i === 9">
+                        <strong matTooltip="{{ expire?.badge?.etcLabels}}" matTooltipPosition="above">...</strong>
+                      </small>
+                   </ng-container>
+                 </div>
+            </div>
+        </div>
+        <div class="fuse-widget-back p-16 pt-32 mat-elevation-z2">
+            <button mat-icon-button fuseWidgetToggle class="fuse-widget-flip-button"
+                    aria-label="Flip widget">
+                <mat-icon class="s-16">close</mat-icon>
+            </button>
+
+            <div style="text-align: center;">
+                <p class="text-wrap" [innerHTML]="expire?.badge?.description"></p>
+            </div>
+        </div>
+    </fuse-widget>
+
+</div>

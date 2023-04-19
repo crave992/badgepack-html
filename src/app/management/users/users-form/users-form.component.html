@@ -1,0 +1,174 @@
+<ng-container *ngIf="(user$ | async) as user">
+    <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
+        <div fxLayout="row" fxLayoutAlign="start center">
+            <button mat-icon-button class="mr-0 mr-sm-16" [routerLink]="'/users'">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+
+            <div class="user-image mr-8 mr-sm-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                <img class="avatar" [src]="user?.meta?.image">
+            </div>
+
+            <div fxLayout="column" fxLayoutAlign="start start"
+                [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                <div class="h2">
+                    {{ user.name || 'New User' }}
+                </div>
+                <div class="subtitle secondary-text">
+                    <span>{{ user.username | uppercase }} &nbsp;</span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <button mat-raised-button class="save-user-button" [disabled]="userForm.invalid" *ngIf="pageType ==='new'"
+                (click)="onSubmit()">
+                <span>ADD USER</span>
+            </button>
+
+            <button mat-raised-button class="save-user-button" [disabled]="userForm.invalid && userForm.pristine"
+                *ngIf="pageType ==='edit'" (click)="onSubmit()">
+                <span>UPDATE</span>
+            </button>
+
+            <button mat-raised-button class="save-user-button ml-8" color="warn" *ngIf="pageType ==='edit'"
+                (click)="openDialog('delete')">
+                <span>DELETE</span>
+            </button>
+        </div>
+    </div>
+    <div class="content-card">
+        <div class="content">
+            <form name="userForm" [formGroup]="userForm" (submit)="onSubmit()" class="user w-100-p" fxLayout="column"
+                fxFlex>
+                <mat-tab-group>
+                    <mat-tab label="Basic Info">
+                        <div class="tab-content p-24" fusePerfectScrollbar>
+                            <div>
+                                <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="70" class="pr-8">
+
+                                    <div formGroupName="meta" fxLayout="row" fxLayoutAlign="start center"
+                                        fxFlex="1 0 auto">
+                                        <mat-form-field appearance="outline" fxFlex="50" class="pr-4">
+                                            <mat-label>First name<span class="red-400-fg">*</span></mat-label>
+                                            <input type="text" matInput formControlName="first_name">
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" fxFlex="50" class="pl-4">
+                                            <mat-label>Last name<span class="red-400-fg">*</span></mat-label>
+                                            <input type="text" matInput formControlName="last_name">
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                                        <mat-form-field appearance="outline" fxFlex="50" class="pr-4">
+                                            <mat-label>Email<span class="red-400-fg">*</span></mat-label>
+                                            <input type="email" matInput formControlName="email">
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" fxFlex="50" class="pl-4">
+                                            <mat-label>Username<span class="red-400-fg">*</span></mat-label>
+                                            <input type="text" matInput formControlName="username">
+                                        </mat-form-field>
+                                    </div>
+
+                                    <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                                        <mat-form-field fxFlex="50" appearance="outline" class="pr-4">
+                                            <mat-label>Role<span class="red-400-fg">*</span></mat-label>
+                                            <mat-select formControlName="role">
+                                                <mat-option *ngIf="getRoles==='manager' || getRoles==='client' || getRoles==='admin'"
+                                                    value="member">Member</mat-option>
+                                                <mat-option *ngIf="getRoles==='manager' || getRoles==='client' || getRoles==='admin'"
+                                                    value="manager">Manager</mat-option>
+                                                <!-- <mat-option *ngIf="getRoles==='client' || getRoles==='admin'"
+                                                    value="client">Client</mat-option> -->
+                                                <mat-option *ngIf="getRoles==='admin'" value="admin">Admin</mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                        <mat-form-field fxFlex="50" appearance="outline" class="pl-4">
+                                            <mat-label>Status<span class="red-400-fg">*</span></mat-label>
+                                            <mat-select formControlName="status">
+                                                <mat-option value="active">Active</mat-option>
+                                                <mat-option value="inactive">Inactive</mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+                                    <mat-divider class="pb-20"></mat-divider>
+                                    <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                                        <mat-form-field appearance="outline" fxFlex="100" class="pr-4">
+                                            <mat-label>Password</mat-label>
+                                            <input type="password" matInput formControlName="password">
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                                        <mat-form-field appearance="outline" fxFlex="100" class="pr-4">
+                                            <mat-label>Confirm Password</mat-label>
+                                            <input type="password" matInput formControlName="confirm_password">
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                                <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="30" class="pl-8">
+                                    <div fxLayout="row" fxLayoutAlign="start center" >
+                                        <mat-form-field appearance="outline" fxFlex="100">
+                                            <mat-label>Reference Code (CSID)<span class="red-400-fg">*</span></mat-label>
+                                            <input class="text-uppercase" type="text" matInput formControlName="code" maxlength="36"
+                                                [attr.disabled]="userForm.controls['meta']['controls']['tag'].value === 'sync' ? true : false">
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxLayout="row" fxLayoutAlign="start center" >
+                                        <mat-form-field appearance="outline" fxFlex="100" formGroupName="meta">
+                                            <mat-label>Tag<span class="red-400-fg">*</span></mat-label>
+                                            <input type="text" matInput formControlName="tag" [readonly]="true">
+                                        </mat-form-field>
+                                    </div>
+
+                                    <div fxLayout="row" fxLayoutAlign="start center" >
+                                        <mat-form-field formGroupName="meta" fxFlex="100" appearance="outline">
+                                            <mat-label>Timezone<span class="red-400-fg">*</span></mat-label>
+                                            <mat-select formControlName="timezone">
+                                                <mat-option value="Asia/Manila">Asia/Manila</mat-option>
+                                                <mat-option value="Asia/Hong_Kong">Asia/Hong Kong</mat-option>
+                                                <mat-option value="Asia/Singapore">Asia/Singapore</mat-option>
+                                                <mat-option value="Australia/Adelaide">Australia/Adelaide</mat-option>
+                                                <mat-option value="Australia/Brisbane">Australia/Brisbane</mat-option>
+                                                <mat-option value="Australia/Darwin">Australia/Darwin</mat-option>
+                                                <mat-option value="Australia/Melbourne">Australia/Melbourne</mat-option>
+                                                <mat-option value="Australia/Perth">Australia/Perth</mat-option>
+                                                <mat-option value="America/Honolulu">America/Anchorage</mat-option>
+                                                <mat-option value="America/Chicago">America/Chicago</mat-option>
+                                                <mat-option value="America/Denver">America/Denver</mat-option>
+                                                <mat-option value="America/Los_Angeles">America/Los Angeles</mat-option>
+                                                <mat-option value="America/Phoenix">America/Phoenix</mat-option>
+                                                <mat-option value="America/New_York">America/New York</mat-option>
+                                                <mat-option value="Pacific/Honolulu">Pacific/Honolulu</mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxLayout="row" fxLayoutAlign="start center">
+                                        <mat-form-field appearance="outline" fxFlex="100">
+                                            <mat-label>Groups<span class="red-400-fg">*</span></mat-label>
+                                            <mat-chip-list #groupChipList aria-label="Group selection" formControlName="groups">
+                                                <mat-chip *ngFor="let userGroup of userGroups" [selectable]="true"
+                                                    [removable]="true" (removed)="removeGroup(userGroup)" [matTooltip]="userGroup.name"
+                                                    matTooltipPosition="above">
+                                                    {{ userGroup.code | uppercase }}
+                                                    <mat-icon matChipRemove>cancel</mat-icon>
+                                                </mat-chip>
+                                                <input placeholder="New group..." #groupInput [formControl]="groupCtrl"
+                                                    [matAutocomplete]="groupAuto" [matChipInputFor]="groupChipList">
+                                            </mat-chip-list>
+                                            <mat-autocomplete #groupAuto="matAutocomplete"
+                                                (optionSelected)="selectedGroup($event)">
+                                                <mat-option *ngFor="let displayGroup of displayGroups" [value]="displayGroup">
+                                                    <strong *ngIf="displayGroup.code" class="mr-4">[{{ displayGroup.code }}]</strong>{{ displayGroup.name }}
+                                                </mat-option>
+                                            </mat-autocomplete>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </mat-tab>
+                </mat-tab-group>
+            </form>
+        </div>
+    </div>
+</ng-container>

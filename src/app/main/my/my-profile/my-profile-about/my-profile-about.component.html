@@ -1,0 +1,155 @@
+<div id="about" class="p-24" fxLayout="row wrap">
+
+    <div class="about-content" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="65">
+
+        <form [formGroup]="userForm" (submit)="onSubmit()">
+            <div class="profile-box info-box general">
+                <header class="accent">
+                    <div class="title">General Information</div>
+                </header>
+                <div class="content">
+                    <div fxLayout="column" class="pr-8" fxLayoutAlign="start stretch" fxFlex="100">
+                        <div formGroupName="meta" fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                            <mat-form-field appearance="outline" fxFlex="50" class="pr-4">
+                                <mat-label>First name<span class="red-400-fg">*</span></mat-label>
+                                <input type="text" matInput formControlName="first_name">
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" fxFlex="50" class="pl-4">
+                                <mat-label>Last name<span class="red-400-fg">*</span></mat-label>
+                                <input type="text" matInput formControlName="last_name">
+                            </mat-form-field>
+                        </div>
+
+                        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                            <mat-form-field appearance="outline" fxFlex="50" class="pr-4">
+                                <mat-label>Username</mat-label>
+                                <input type="text" matInput formControlName="username">
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" fxFlex="50" class="pl-4">
+                                <mat-label>Role</mat-label>
+                                <input type="text" matInput formControlName="role" class="role-class">
+                            </mat-form-field>
+                        </div>
+
+                        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                            <mat-form-field appearance="outline" fxFlex="50" class="pr-4">
+                                <mat-label>Email</mat-label>
+                                <input type="email" matInput formControlName="email">
+                            </mat-form-field>
+                            <mat-form-field formGroupName="meta" fxFlex="50" appearance="outline" class="pl-4">
+                                <mat-label>Timezone</mat-label>
+                                <mat-select formControlName="timezone">
+                                    <mat-option value="Asia/Manila">Asia/Manila</mat-option>
+                                    <mat-option value="Asia/Hong_Kong">Asia/Hong Kong</mat-option>
+                                    <mat-option value="Asia/Singapore">Asia/Singapore</mat-option>
+                                    <mat-option value="Australia/Adelaide">Australia/Adelaide</mat-option>
+                                    <mat-option value="Australia/Brisbane">Australia/Brisbane</mat-option>
+                                    <mat-option value="Australia/Darwin">Australia/Darwin</mat-option>
+                                    <mat-option value="Australia/Melbourne">Australia/Melbourne</mat-option>
+                                    <mat-option value="Australia/Perth">Australia/Perth</mat-option>
+                                    <mat-option value="America/Honolulu">America/Anchorage</mat-option>
+                                    <mat-option value="America/Chicago">America/Chicago</mat-option>
+                                    <mat-option value="America/Denver">America/Denver</mat-option>
+                                    <mat-option value="America/Los_Angeles">America/Los Angeles</mat-option>
+                                    <mat-option value="America/Phoenix">America/Phoenix</mat-option>
+                                    <mat-option value="America/New_York">America/New York</mat-option>
+                                    <mat-option value="Pacific/Honolulu">Pacific/Honolulu</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="profile-box info-box general">
+                <header class="accent">
+                    <div class="title">Notifications</div>
+                </header>
+                <div class="content">
+                    <div class="email-notification">
+                        <div fxLayout="row" fxLayoutAlign="space-between center">
+                            <h2 fxFlex="40">New Badge</h2>
+                            <label class="switch" for="checkbox1">
+                                <input type="checkbox" id="checkbox1" formControlName="new_badge_notification"/>
+                                <div class="slider round"></div>
+                            </label>
+                        </div>
+                        <div class="quote">Notify me when I receive a badge</div>
+                    </div>
+                    <br>
+                    <div class="email-notification">
+                        <div fxLayout="row" fxLayoutAlign="space-between center">
+                            <h2 fxFlex="40">Soon to Expire Badge</h2>
+                            <label class="switch" for="checkbox2">
+                                <input type="checkbox" id="checkbox2" formControlName="soon_to_expire_badge_notification"/>
+                                <div class="slider round"></div>
+                            </label>
+                        </div>
+                        <div class="quote">Notify me when my badge is about to expire</div>
+                    </div>
+                    <br>
+                    <div class="email-notification">
+                        <div fxLayout="row" fxLayoutAlign="space-between center">
+                            <h2 fxFlex="40">Expired Badge</h2>
+                            <label class="switch" for="checkbox3">
+                                <input type="checkbox" id="checkbox3" formControlName="expired_badge_notification"/>
+                                <div class="slider round"></div>
+                            </label>
+                        </div>
+                        <div class="quote">Notify me when my badge had expired</div>
+                    </div>
+                    <br>
+                    <div class="email-notification">
+                        <div fxLayout="row" fxLayoutAlign="space-between center">
+                            <h2 fxFlex="40">Removed Badge</h2>
+                            <label class="switch" for="checkbox4">
+                                <input type="checkbox" id="checkbox4" formControlName="removed_badge_notification"/>
+                                <div class="slider round"></div>
+                            </label>
+                        </div>
+                        <div class="quote">Notify me when my badge had been removed</div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <button mat-raised-button color="accent">
+                    <span>UPDATE</span>
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+    <div class="about-sidebar" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="35">
+
+        <div class="profile-box groups" fxLayout="column">
+
+            <header class="accent" fxLayout="row" fxLayoutAlign="space-between center">
+                <div class="title">Associated To</div>
+            </header>
+
+            <div class="content">
+
+                <div class="group" *ngFor="let group of auth?.groups" fxLayout="row"
+                    fxLayoutAlign="space-between center">
+
+                    <div fxLayout="row" fxLayoutAlign="start center">
+
+                        <div class="logo">{{group.name.substring(0,1)}}</div>
+
+                        <div>
+                            <div class="name">#{{ group.name }}</div>
+                            <div class="category">Group</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

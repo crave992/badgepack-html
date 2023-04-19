@@ -1,0 +1,176 @@
+badges .header .badge-image {
+  overflow: hidden;
+  width: 64px;
+  min-width: 64px;
+  max-width: 56px;
+  height: 64px;
+  min-height: 64px;
+  max-height: 64px;
+  border-radius: 4px;
+}
+badges .header .badge-image img {
+  height: 100%;
+  width: auto;
+  max-width: none;
+}
+badges .header .subtitle {
+  margin: 6px 0 0 0;
+}
+badges .header .link-badge-button mat-icon {
+  height: 32px;
+  width: 32px;
+  line-height: 32px;
+  font-size: 32px;
+}
+badges .content .mat-tab-group,
+badges .content .mat-tab-body-wrapper,
+badges .content .tab-content {
+  flex: 1 1 auto;
+  max-width: 100%;
+}
+badges .content .mat-tab-body-content {
+  display: flex;
+}
+badges .content .mat-tab-label {
+  height: 64px;
+}
+badges .content .mat-checkbox .mat-checkbox-frame {
+  transform: scale(1.3);
+}
+badges .content .mat-checkbox-checked .mat-checkbox-background {
+  transform: scale(1.3);
+}
+badges .content .badge-image {
+  overflow: hidden;
+  width: 128px;
+  height: 128px;
+  margin-right: 16px;
+  margin-bottom: 16px;
+  border-radius: 4px;
+}
+badges .content .badge-image img {
+  height: 100%;
+  width: auto;
+  max-width: none;
+}
+badges .content .mat-form-field-appearance-outline .mat-form-field-prefix,
+badges .content .mat-form-field-appearance-outline .mat-form-field-suffix {
+  top: 0;
+}
+badges .content .slide-toggle-button {
+  padding-top: 20px;
+}
+badges .content .mat-form-field-appearance-fill .mat-form-field-prefix,
+badges .content .mat-form-field-appearance-fill .mat-form-field-suffix {
+  top: 0;
+}
+badges .integration-box {
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+badges .integration-box .integration-header {
+  padding: 12px;
+}
+badges .integration-box .integration-header .title {
+  font-size: 17px;
+  font-weight: bold;
+}
+badges .integration-box .more {
+  cursor: pointer;
+}
+badges .email-notif {
+  display: flex;
+  flex-direction: row !important;
+}
+badges .email-notif .mat-ink-bar {
+  display: none;
+}
+badges .email-notif .mat-tab-body-content {
+  display: flex;
+  flex-direction: column;
+}
+badges .email-notif .mat-tab-labels {
+  display: flex;
+  flex-direction: column;
+}
+badges .email-notif .mat-tab-labels .mat-tab-label {
+  justify-content: start;
+}
+badges .email-notif .mat-tab-labels .mat-tab-label-active {
+  position: relative;
+}
+badges .email-notif .mat-tab-labels .mat-tab-label-active::after {
+  content: "";
+  background: #000;
+  height: 2px;
+  width: 100%;
+  position: absolute;
+  top: 92%;
+  left: 0;
+  right: 0;
+}
+badges .merge-field .mat-tab-body-content {
+  display: flex;
+  flex-direction: column;
+}
+badges .merge-field h5 {
+  text-align: center;
+  border-bottom: 1px solid #E0E0E0;
+}
+badges .merge-field h5 span {
+  display: block;
+  width: fit-content;
+  margin: 0 auto -8px;
+  background: #FFFFFF;
+  color: #5e5e5e;
+  padding: 0 10px;
+}
+badges .merge-field ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+badges .merge-field ul li {
+  line-height: 2.2;
+  font-style: italic;
+  color: #5e5e5e;
+}
+badges .merge-field ul li span {
+  font-style: normal;
+  padding: 3px 10px;
+  background: #E0E0E0;
+  border-radius: 2px;
+}
+badges .merge-field ul li span::before {
+  content: "{{";
+}
+badges .merge-field ul li span::after {
+  content: "}}";
+}
+
+.editor {
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  font-size: 17px;
+}
+.editor .NgxEditor__MenuBar {
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 0.9rem;
+}
+.editor .NgxEditor {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border: none;
+  color: rgba(0, 0, 0, 0.54);
+}
+.editor .CodeMirror {
+  border: 1px solid #eee;
+  height: auto;
+  margin-bottom: 0.7rem;
+}
+.editor .CodeMirror pre {
+  white-space: pre !important;
+}

@@ -1,0 +1,30 @@
+.task-header {
+  padding: 0 5px;
+  height: 20px;
+}
+
+.fx-spacer {
+  flex: 1 1 auto;
+  background-color: none !important;
+}
+
+.mat-toolbar.task-header {
+  background: white !important;
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+
+::ng-deep .badge-checklist.mat-checkbox-checked .mat-checkbox-background,
+.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background:after {
+  background-color: orange !important;
+}
+
+::ng-deep .manual.mat-checkbox-checked .mat-checkbox-background,
+.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background:after {
+  background-color: orange !important;
+}
+
+::ng-deep .integration.mat-checkbox-checked .mat-checkbox-background,
+.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background:after {
+  background-color: #4398fe !important;
+}

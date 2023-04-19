@@ -1,0 +1,47 @@
+.mat-table {
+    flex: 1 1 auto;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+
+    .mat-header-row {
+        min-height: 64px;
+    }
+
+    .mat-cell {
+        min-width: 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .mat-column-status {
+        flex: 0 1 200px;
+    }
+
+    .mat-column-csid {
+        flex: 0 1 200px;
+    }
+
+    .mat-column-name {
+        flex: 0 1 350px;
+    }
+
+    .mat-column-badge_name {
+        flex: 0 1 300px;
+    }
+
+    .mat-column-application {
+        flex: 0 1 200px;
+    }
+   
+    .mat-column-issuance_date {
+        flex: 0 1 200px;
+    }
+
+    .mat-column-expiry_date {
+        flex: 0 1 200px;
+    }
+
+    .active-icon {
+        border-radius: 50%;
+    }
+}

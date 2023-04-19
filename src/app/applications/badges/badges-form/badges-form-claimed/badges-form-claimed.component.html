@@ -1,0 +1,190 @@
+<div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100">
+    <form name="badgeForm" [formGroup]="assignedBadgesForm">
+        <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="pr-8">
+            <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                <mat-form-field appearance="outline" fxFlex="80" class="user-form">
+                    <mat-chip-list #userList aria-label="User selection">
+                        <mat-chip *ngFor="let user of badgeUsers" [selectable]="selectable" [removable]="removable"
+                            (removed)="removeUser(user)" [matTooltip]="user?.name">
+                            {{ user?.username }}
+                            <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                        </mat-chip>
+                        <input placeholder="Select User..." #userInput [formControl]="userCtrl"
+                            [matAutocomplete]="userAuto" [matChipInputFor]="userList" (click)="addUser($event)">
+                    </mat-chip-list>
+                    <mat-autocomplete #userAuto="matAutocomplete" (optionSelected)="selectedUser($event)">
+                        <mat-option *ngFor="let displayUser of displayUsers" [value]="displayUser">
+                            {{ displayUser?.name }} ({{ displayUser?.username }})
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+                <div fxFlex="20" *ngIf="hasChecklist === 'no'" fxLayoutAlign="end center" fxFlex="1 0 auto"
+                    class="issue-badge-button">
+                    <button type="button" mat-raised-button color="accent" class="assign-badge-button ml-32"
+                        fxFlex="100" (click)="onIssue()" [disabled]="assignedBadgesForm.invalid">
+                        <span> ISSUE BADGE </span>
+                    </button>
+                </div>
+                <div fxFlex="20" *ngIf="hasChecklist === 'yes'" fxLayoutAlign="end center" fxFlex="1 0 auto"
+                    class="issue-badge-button">
+                    <button type="button" mat-raised-button color="accent" class="assign-badge-button ml-32"
+                        fxFlex="100" (click)="onOpenDialogDelete('showChecklist', '')">
+                        <span> Select item from Checklist </span>
+                    </button>
+                </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="30">
+                    <mat-form-field formGroupName="meta" appearance="outline" class="p-0">
+                        <mat-label> Issuance Date <span class="red-400-fg">*</span></mat-label>
+                            <div *ngIf="isChecklist === 'yes'; else elseBlock">
+                                <input matInput formControlName="acquired_date" id="getDate" [matDatepicker]="picker" 
+                                    [max]="maxDate" (dateChange)="onChangeDate($event)">
+                            </div>
+                            <ng-template #elseBlock>
+                                <input matInput formControlName="acquired_date" id="getDate" [matDatepicker]="picker" 
+                                    (dateChange)="onChangeDate($event)">
+                            </ng-template>
+                        <mat-datepicker-toggle matSuffix [for]="picker" class="mt-1"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+                    <mat-form-field formGroupName="meta" appearance="outline">
+                        <mat-label> Issuance Time <span class="red-400-fg">*</span> </mat-label>
+                        <div *ngIf="isChecklist === 'yes'">
+                            <input matInput formControlName="acquired_time" [ngxTimepicker]="time" id="getTime" 
+                                [disableClick]="isReadOnly" [readonly] = "isReadOnly">
+                        </div>
+                        <div *ngIf="isChecklist === 'no'">
+                            <input matInput formControlName="acquired_time" [ngxTimepicker]="time" id="getTime">
+                        </div>
+                        <ngx-material-timepicker #time></ngx-material-timepicker>
+                    </mat-form-field>
+                </div>
+                <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="50" class="column-for-remarks">
+                    <mat-form-field appearance="outline" class="remarks-text ml-16">
+                        <mat-label> Remarks </mat-label>
+                        <textarea rows="4" matInput formControlName="remarks">{{ isChecklist }}</textarea>
+                    </mat-form-field>
+                </div>
+                <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="20">
+                </div>
+            </div>
+        </div>
+    </form>
+    <mat-table #table [dataSource]="badgeAssignees" matSort (matSortChange)="sortData($event)"
+        class="mat-elevation-z1 badge-assignee-table" fusePerfectScrollbar>
+        <ng-container matColumnDef="badgeId">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Issued Badge ID </mat-header-cell>
+            <mat-cell *matCellDef="let assignee"> BI-{{ assignee?.claim_id }} </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="csid">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> CSID </mat-header-cell>
+            <mat-cell *matCellDef="let assignee">{{ assignee?.user?.code | uppercase }}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="username">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
+            <mat-cell *matCellDef="let assignee">
+                <p>
+                    {{ assignee?.user?.name }}
+                    <br>
+                    <small *ngIf="assignee?.user?.username" class="secondary-text">
+                        {{ assignee?.user?.username | uppercase }}
+                    </small>
+                </p>
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="remark">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Remarks </mat-header-cell>
+            <mat-cell *matCellDef="let assignee"> {{ assignee?.remarks }} </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="status">
+            <mat-header-cell *matHeaderCellDef mat-sort-header class="status-column"> Status </mat-header-cell>
+            <mat-cell *matCellDef="let assignee"
+                (click)="assignee?.queue === 'Completed'
+                    || assignee?.queue === 'Pending' ?
+                    onOpenDialogDelete('showProgress', assignee?.user_id, assignee?.claim_id) : ''">
+                <p class="status-text" class="partial" *ngIf="assignee?.queue === 'Pending'">
+                    <mat-checkbox type="checkbox" class=" partial mr-12" [class.mat-checkbox-disabled]="false" disabled
+                        checked="true"></mat-checkbox>
+                    <small class="ml-12">
+                        {{ assignee?.progress }}
+                    </small>
+                </p>
+                <p class="status-text" class="completed" *ngIf="assignee?.queue === 'Completed'">
+                    <mat-checkbox type="checkbox" class="completed mr-12" [class.mat-checkbox-disabled]="false" disabled
+                        checked="true"></mat-checkbox>
+                    <small class="ml-12">
+                        {{ assignee?.progress }}
+                    </small>
+                </p>
+                <p class="status-text">
+                    <mat-checkbox type="checkbox" *ngIf="assignee?.queue === 'Issued'" class="mr-12 ml-12 no-pointer"
+                        [class.mat-checkbox-disabled]="false" disabled checked="true"></mat-checkbox>
+                    <img class="on-queue mr-12 ml-12" src="../../../../../assets/icons/status/on-queue.png"
+                        *ngIf="assignee?.queue === 'On Queue'">
+                    <img class="on-queue mr-12 ml-12" src="../../../../../assets/icons/status/expired.png"
+                        *ngIf="assignee?.queue === 'Expired'">
+                </p>
+                <p><small class="ml-12"> {{ assignee?.queue === 'Completed' ? 'Issued' : assignee?.queue }}</small></p>
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="app">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Issued From</mat-header-cell>
+            <mat-cell *matCellDef="let assignee">
+                <p *ngIf="assignee?.application === 'Badge'">BadgePack </p>
+                <p *ngIf="assignee?.application !=='Badge'">{{ assignee?.application }} </p>
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="issued_at">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Issuance Date </mat-header-cell>
+            <mat-cell *matCellDef="let assignee">
+                <p class="text-truncate" matTooltip="{{ assignee?.enabled_at | tzDate:'DD-MMM-YY HH:mm' }}"
+                    matTooltipPosition="above">
+                    <span>{{ assignee?.enabled_at === null ? '' : assignee?.enabled_at | tzDate:'ago' | lowercase
+                        }}</span>
+                </p>
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="expiration">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Expiry Date </mat-header-cell>
+            <mat-cell *matCellDef="let assignee">
+                <p *ngIf="assignee?.expired_at != null && assignee?.queue !== null" class="text-truncate"
+                    matTooltip=" {{ assignee?.expired_at | tzDate:'DD-MMM-YY HH:mm' }} " matTooltipPosition="above">
+                    <span>{{ assignee?.expired_at | tzDate:'ago' | lowercase }}</span>
+                </p>
+                <p *ngIf="assignee?.expired_at === null && assignee?.queue !== 'Pending'" class="text-truncate">
+                    <span> No expiration </span>
+                </p>
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="issuer">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Issued by </mat-header-cell>
+            <mat-cell *matCellDef="let assignee">
+                <p *ngIf="assignee?.queue !== 'Pending'"
+                    [matTooltip]="getAllUpdator(assignee?.user?.user_checklists)?.updator"
+                    matTooltipClass="my-tooltip">
+                    {{ getAllUpdator(assignee?.user?.user_checklists)?.updator_list.length > 1 ? '*' +
+                    assignee?.recent_updator[0]?.name : assignee?.creator?.name }}
+                    <br>
+                    <small *ngIf="getAllUpdator(assignee?.user?.user_checklists)?.updator_list.length > 1
+                        || assignee?.creator?.username" class="secondary-text">
+                        {{ getAllUpdator(assignee?.user?.user_checklists)?.updator_list.length > 1 ? '*' +
+                        assignee?.recent_updator[0]?.username : assignee?.creator?.username }}
+                    </small>
+                </p>
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="options">
+            <mat-header-cell *matHeaderCellDef class="options"> Action </mat-header-cell>
+            <mat-cell *matCellDef="let assignee" class="options">
+                <mat-icon class="active-icon red-500 s-25" (click)="onOpenDialogDelete('delete', assignee.id)"> close
+                </mat-icon>
+            </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="tableColumns; sticky: true"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: tableColumns;"></mat-row>
+    </mat-table>
+    <mat-paginator #paginator class="w-100-p" [length]="badgeAssignees?.paginator" [pageIndex]="0" [pageSize]="10"
+        [pageSizeOptions]="[10, 25, 50, 100]">
+    </mat-paginator>
+</div>

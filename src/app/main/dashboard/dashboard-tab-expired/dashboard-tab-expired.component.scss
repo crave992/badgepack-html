@@ -1,0 +1,17 @@
+.my-badge-expired {
+  img {
+    filter: grayscale(100%);
+  }
+}
+
+.labels small {
+  display: inline-block;
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.text-wrap {
+  white-space: none!important;
+  text-align: justify;
+}

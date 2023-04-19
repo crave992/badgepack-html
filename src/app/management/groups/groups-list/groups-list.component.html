@@ -1,0 +1,113 @@
+<!-- CONTENT HEADER -->
+<div class="header accent" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-xs="row"
+    fxLayoutAlign.gt-xs="space-between center">
+    <div fxLayout="row" fxLayoutAlign="start start" fxHide.gt-md>
+        <button mat-icon-button class="sidebar-toggle mr-8" (click)="toggleSidebar('groups')">
+            <mat-icon>menu</mat-icon>
+        </button>
+    </div>
+    <!-- SEARCH -->
+    <div class="search-wrapper mx-32 mx-md-0" fxHide.lt-sm>
+        <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+            <mat-icon>search</mat-icon>
+            <input #filter (keyup)="searchFilter($event)" placeholder="Search for a group code, name" />
+            <mat-icon class="btn-filter-list">filter_list</mat-icon>
+        </div>
+    </div>
+    <!-- / SEARCH -->
+
+    <div>
+        <!-- ADD BUTTON -->
+        <button mat-raised-button [routerLink]="'/groups/create'" class="add-group-button fuse-white mt-24 mr-4 mt-sm-0"
+            fxHide.lt-sm>
+            <span>NEW GROUP</span>
+        </button>
+        <!-- / ADD BUTTON -->
+        <!-- EXPORT BUTTON -->
+        <button *ngIf="groups.paginator.length" class="ml-4" type="button" mat-raised-button
+            (click)="exportToCsv()" color="primary">
+            <span>EXPORT TO CSV</span>
+        </button>
+        <!-- / EXPORT BUTTON -->
+    </div>
+
+</div>
+<!-- / CONTENT HEADER -->
+
+<!-- CONTENT CARD -->
+<div class="content-card">
+    <!-- CONTENT -->
+
+    <mat-table class="groups-table" matTableExporter #table [dataSource]="groups" matSort #exporter="matTableExporter"
+        [hiddenColumns]="[1]" fusePerfectScrollbar>
+
+        <!-- Image Column -->
+        <ng-container matColumnDef="image">
+            <mat-header-cell *matHeaderCellDef></mat-header-cell>
+            <mat-cell *matCellDef="let group">
+                <img class="group-image avatar" [alt]="group?.name" [src]="group?.meta?.image" />
+            </mat-cell>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="code">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="code">Code</mat-header-cell>
+            <mat-cell *matCellDef="let group">
+                <p style= "font-size: 12px;">{{ group.code | uppercase }}</p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Role Column -->
+        <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="name" fxHide fxShow.gt-xs>Name</mat-header-cell>
+            <mat-cell *matCellDef="let group" fxHide fxShow.gt-xs>
+                <p>
+                    <span [innerHTML]="group.name"></span> <br>
+                    <span class="secondary-text">{{ group.description }}</span>
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Created At Column -->
+        <ng-container matColumnDef="created_at">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="created_at" fxHide fxShow.gt-sm>Created at</mat-header-cell>
+            <mat-cell *matCellDef="let group" fxHide fxShow.gt-sm>
+                <p class="text-truncate" matTooltip="{{ group.created_at | tzDate:'DD-MMM-YY HH:mm' }}" matTooltipPosition="above">
+                    <span>{{ group.created_at | tzDate:'ago' | lowercase }}</span>
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Updated At Column -->
+        <ng-container matColumnDef="updated_at">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="updated_at" fxHide fxShow.gt-sm>Updated at</mat-header-cell>
+            <mat-cell *matCellDef="let group" fxHide fxShow.gt-sm>
+                <p class="text-truncate" matTooltip="{{ group.updated_at | tzDate:'DD-MMM-YY HH:mm' }}" matTooltipPosition="above">
+                    <span>{{ group.updated_at | tzDate:'ago' | lowercase }}</span>
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Active Column -->
+        <ng-container matColumnDef="status">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="status" fxHide fxShow.gt-xs>Status</mat-header-cell>
+            <mat-cell *matCellDef="let group" fxHide fxShow.gt-xs>
+                <mat-icon *ngIf="group.status === 'active'" class="active-icon green-600 s-16" aria-label="Active">check</mat-icon>
+                <mat-icon *ngIf="group.status === 'inactive'" class="active-icon red-500 s-16" aria-label="Inactive">close</mat-icon>
+            </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="tableColumns; sticky: true"></mat-header-row>
+
+        <mat-row *matRowDef="let group; columns: tableColumns" class="group" matRipple
+            [routerLink]="'/groups/' + group.id + '/edit'">
+        </mat-row>
+    </mat-table>
+
+    <mat-paginator #paginator class="w-100-p" [length]="groups.paginator" [pageIndex]="0" [pageSize]="10"
+        [pageSizeOptions]="[10, 25, 50, 100]">
+    </mat-paginator>
+
+    <!-- / CONTENT -->
+</div>
+<!-- / CONTENT CARD -->

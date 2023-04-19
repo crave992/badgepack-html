@@ -1,0 +1,253 @@
+<div class="page-layout simple left-sidebar inner-scroll h-100-p">
+
+    <!-- SIDEBAR -->
+    <fuse-sidebar class="sidebar" name="reports-badges-claimed-sidebar" position="left" lockedOpen="gt-md">
+
+        <!-- SIDEBAR CONTENT -->
+        <div class="content p-24" fusePerfectScrollbar>
+            <div class="content">
+                <form [formGroup]="reportForm" (submit)="onSubmit()" novalidate>
+                    <div fxLayout="column" fxFlex="100">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Report Type</mat-label>
+                            <mat-select formControlName="type" (selectionChange)="changeType($event)">
+                                <mat-option value="issued">Issued Badges</mat-option>
+                                <mat-option value="expired">Expired Badges</mat-option>
+                                <mat-option value="soon-to-expire">Soon to Expire</mat-option>
+                                <mat-option value="absence">Absence of Data</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                            <mat-label>From</mat-label>
+                            <input matInput formControlName="dateFrom"
+                            (dateChange)="changeDate('change', $event)" [matDatepicker]="dateFrom" [max]="tomorrow" (focus)="dateFrom.open()" placeholder="Choose a date">
+                            <mat-datepicker-toggle matSuffix [for]="dateFrom">
+                            </mat-datepicker-toggle>
+                            <mat-datepicker #dateFrom></mat-datepicker>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                            <mat-label>To</mat-label>
+                            <input matInput formControlName="dateTo"
+                            [matDatepicker]="dateTo" [min]="minDate" [max]="tomorrow" (focus)="dateTo.open()" placeholder="Choose a date">
+                            <mat-datepicker-toggle matSuffix [for]="dateTo">
+                            </mat-datepicker-toggle>
+                            <mat-datepicker #dateTo></mat-datepicker>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" class="badge-form">
+                            <mat-label>Badges</mat-label>
+                            <mat-chip-list #badgeList aria-label="Badge selection">
+                                <mat-chip *ngFor="let badge of badges" [selectable]="selectableBadges" [removable]="removableBadges"
+                                    (removed)="removeBadge(badge)">
+                                    {{ badge.name }}
+                                    <mat-icon matChipRemove *ngIf="removableBadges">cancel</mat-icon>
+                                </mat-chip>
+                                <input #badgeInput [formControl]="badgeCtrl"
+                                    [matAutocomplete]="badgeAuto" [matChipInputFor]="badgeList" (click)="addBadge($event)">
+                            </mat-chip-list>
+                            <mat-autocomplete #badgeAuto="matAutocomplete" (optionSelected)="selectedBadge($event)">
+                                <mat-option *ngFor="let displayBadge of displayBadges" [value]="displayBadge">
+                                    {{ displayBadge?.name }}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" class="group-form">
+                            <mat-label>Badge Groups</mat-label>
+                            <mat-chip-list #groupList aria-label="Group selection">
+                                <mat-chip *ngFor="let group of groups" [selectable]="selectableGroups" [removable]="removableGroups"
+                                    (removed)="removeGroup(group)" [matTooltip]="group.name"
+                                    matTooltipPosition="above">
+                                    {{ group?.code || group?.name | uppercase }}
+                                    <mat-icon matChipRemove *ngIf="removableGroups">cancel</mat-icon>
+                                </mat-chip>
+                                <input #groupInput [formControl]="groupCtrl"
+                                    [matAutocomplete]="groupAuto" [matChipInputFor]="groupList" (click)="addGroup($event)">
+                            </mat-chip-list>
+                            <mat-autocomplete #groupAuto="matAutocomplete" (optionSelected)="selectedGroup($event)">
+                                <mat-option *ngFor="let displayGroup of displayGroups" [value]="displayGroup">
+                                    <strong *ngIf="displayGroup?.code" class="mr-4">[{{ displayGroup?.code }}]</strong>
+                                        {{ displayGroup?.name }}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="user-group-form">
+                            <mat-label>User Groups</mat-label>
+                            <mat-chip-list #userGroupList aria-label="User Group selection">
+                                <mat-chip *ngFor="let userGroup of userGroups" [selectable]="selectableUserGroups" [removable]="removableUserGroups"
+                                    (removed)="removeUserGroup(userGroup)" [matTooltip]="userGroup.name"
+                                    matTooltipPosition="above">
+                                    {{ userGroup?.code || userGroup?.name | uppercase }}
+                                    <mat-icon matChipRemove *ngIf="removableUserGroups">cancel</mat-icon>
+                                </mat-chip>
+                                <input #userGroupInput [formControl]="userGroupCtrl"
+                                    [matAutocomplete]="userGroupAuto" [matChipInputFor]="userGroupList" (click)="addUserGroup($event)">
+                            </mat-chip-list>
+                            <mat-autocomplete #userGroupAuto="matAutocomplete" (optionSelected)="selectedUserGroup($event)">
+                                <mat-option *ngFor="let displayUserGroup of displayUserGroups" [value]="displayUserGroup ">
+                                    <strong *ngIf="displayUserGroup ?.code" class="mr-4">[{{ displayUserGroup ?.code }}]</strong>
+                                        {{ displayUserGroup?.name }}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+
+                        <button type="submit" mat-raised-button color="accent">
+                            <span>GENERATE</span>
+                        </button>
+                        <button *ngIf="reports.paginator.length"
+                            class="mt-24"
+                            type="button"
+                            mat-raised-button
+                            (click)="exporter.exportTable('csv', {fileName: fileType + ' ' + startDate + ' to ' + endDate})"
+                            color="primary">
+                            <span>EXPORT TO CSV</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- / SIDEBAR CONTENT -->
+
+    </fuse-sidebar>
+    <!-- / SIDEBAR -->
+
+    <!-- CENTER -->
+    <div class="center" fusePerfectScrollbar>
+
+        <!-- HEADER -->
+        <div class="header accent p-24" fxLayout="row" fxLayoutAlign="start center">
+
+            <button mat-icon-button class="sidebar-toggle mr-8" fxHide.gt-md
+                    (click)="toggleSidebar('reports-badges-claimed-sidebar')">
+                <mat-icon>menu</mat-icon>
+            </button>
+
+            <h2 class="m-0">Badges Report</h2>
+
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT -->
+        <div class="content p-24">
+            <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100">
+                <mat-table
+                 #table matTableExporter [dataSource]="reports" matSort class="mat-elevation-z1 badge-credit-table" [matSortActive]="sortActive" [matSortDirection]="direct"
+                 #exporter="matTableExporter" fusePerfectScrollbar>
+
+                 <ng-container *ngIf="reportForm.controls['type'].value === 'soon-to-expire'" matColumnDef="status">
+                    <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
+                    <mat-cell *matCellDef="let report">
+                        <p> Expires {{ report?.expired_at | tzDate:'ago'}} </p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container *ngIf="reportForm.controls['type'].value === 'soon-to-expire'"  matColumnDef="expiry_date">
+                    <mat-header-cell *matHeaderCellDef> Expiry Date </mat-header-cell>
+                    <mat-cell *matCellDef="let report">
+                        <span *ngIf="report?.expired_at !== null">{{ report?.expired_at | tzDate:'DD-MMM-YYYY' }}</span>
+                        <span *ngIf="report?.expired_at === null">No Expiration</span>
+                    </mat-cell>
+                </ng-container>
+
+                    <ng-container *ngIf="reportForm.controls['type'].value !== 'absence'" matColumnDef="csid">
+                        <mat-header-cell *matHeaderCellDef> CSID </mat-header-cell>
+                        <mat-cell *matCellDef="let report">
+                            {{ report['user.code'] | uppercase }}
+                        </mat-cell>
+                    </ng-container>
+
+                    <ng-container *ngIf="reportForm.controls['type'].value !== 'absence'" matColumnDef="name">
+                        <mat-header-cell *matHeaderCellDef> Name/Username </mat-header-cell>
+                        <mat-cell *matCellDef="let report">
+                            <p>
+                                <small *ngIf="report['user.username']" class="secondary-text">({{ report['user.username'] | uppercase }})</small>
+                                {{ report['user.name'] }}
+                            </p>
+                        </mat-cell>
+                    </ng-container>
+
+                    <ng-container *ngIf="reportForm.controls['type'].value === 'absence'" matColumnDef="csid">
+                        <mat-header-cell *matHeaderCellDef> CSID </mat-header-cell>
+                        <mat-cell *matCellDef="let report">
+                            {{ report?.code | uppercase }}
+                        </mat-cell>
+                    </ng-container>
+
+                    <ng-container *ngIf="reportForm.controls['type'].value === 'absence'" matColumnDef="name">
+                        <mat-header-cell *matHeaderCellDef> Name/Username </mat-header-cell>
+                        <mat-cell *matCellDef="let report">
+                            <p>
+                                <small *ngIf="report?.username" class="secondary-text">({{report?.username | uppercase}})</small>
+                                {{ report?.name }}
+                            </p>
+                        </mat-cell>
+                    </ng-container>
+
+
+                    <ng-container *ngIf="reportForm.controls['type'].value !== 'absence'" matColumnDef="badge_name">
+                        <mat-header-cell *matHeaderCellDef>Badge Name </mat-header-cell>
+                        <mat-cell *matCellDef="let report">
+                            <p>
+                                {{ report['badge.name'] }}
+                            </p>
+                        </mat-cell>
+                    </ng-container>
+
+                    <ng-container *ngIf="reportForm.controls['type'].value === 'absence'" matColumnDef="badge_name">
+                        <mat-header-cell *matHeaderCellDef>Badge Name </mat-header-cell>
+                        <mat-cell *matCellDef="let report">
+                            <p>
+                                {{ report?.absent_badge }}
+                            </p>
+                        </mat-cell>
+                    </ng-container>
+
+                    <ng-container *ngIf="reportForm.controls['type'].value !== 'absence'" matColumnDef="issuance_date">
+                        <mat-header-cell *matHeaderCellDef>Issuance Date</mat-header-cell>
+                        <mat-cell *matCellDef="let report">
+                                <span>{{ report?.enabled_at | tzDate:'DD-MMM-YYYY' }}</span>
+                        </mat-cell>
+                    </ng-container>
+
+                    <ng-container *ngIf="reportForm.controls['type'].value === 'absence'" matColumnDef="date">
+                        <mat-header-cell *matHeaderCellDef>Date</mat-header-cell>
+                        <mat-cell *matCellDef="let report">
+                                <span>{{ report?.issue_date | tzDate:'DD-MMM-YYYY' }}</span>
+                        </mat-cell>
+                    </ng-container>
+
+                    <ng-container *ngIf="reportForm.controls['type'].value === 'issued' || reportForm.controls['type'].value === 'expired'" matColumnDef="expiry_date">
+                        <mat-header-cell *matHeaderCellDef> Expiry Date </mat-header-cell>
+                        <mat-cell *matCellDef="let report">
+                            <span *ngIf="report?.expired_at !== null">{{ report?.expired_at | tzDate:'DD-MMM-YYYY' }}</span>
+                            <span *ngIf="report?.expired_at === null">No Expiration</span>
+                        </mat-cell>
+                    </ng-container>
+
+                    <ng-container *ngIf="reportForm.controls['type'].value === 'issued' || reportForm.controls['type'].value === 'expired'" matColumnDef="application">
+                        <mat-header-cell *matHeaderCellDef> Application </mat-header-cell>
+                        <mat-cell *matCellDef="let report">
+                            <p *ngIf="report.application === 'Badge'; else retApplication">
+                                BadgePack
+                            </p>
+                            <ng-template #retApplication>
+                                <p>
+                                    {{ report?.application }}
+                                </p>
+                            </ng-template>
+                        </mat-cell>
+                    </ng-container>
+
+                    <mat-header-row *matHeaderRowDef="tableColumns; sticky: true"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: tableColumns;"></mat-row>
+                </mat-table>
+                <mat-paginator #paginator class="w-100-p" [length]="reports.paginator" [pageIndex]="0" [pageSize]="10"
+                    [pageSizeOptions]="[10, 25, 50, 100]">
+                </mat-paginator>
+            </div>
+        </div>
+        <!-- / CONTENT -->
+
+    </div>
+    <!-- / CENTER -->
+
+</div>

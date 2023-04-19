@@ -1,0 +1,161 @@
+<div class="p-24" fxLayout="row wrap" fxFlex="100" [@animateStagger]="{value:'50'}">
+    <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100">
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between" fxLayoutGap="20px" class="filters">
+            <div fxFlex="50">
+                <mat-expansion-panel [expanded]="false" (click)="truncateChips($event)">
+                    <mat-expansion-panel-header collapsedHeight="80px" expandedHeight="10px">
+                        <mat-panel-title>
+                            <div style="max-height: 40px;">
+                                <mat-chip-list #chipList>
+                                    <mat-icon mdPrefix>filter_list</mat-icon>
+                                    <mat-label *ngIf="!displayLabelNames?.length">&nbsp;Filter By Label</mat-label>
+                                    <mat-chip [id]="label" *ngFor="let label of displayLabelNames"
+                                        [selectable]="selectable" [removable]="removable" (removed)="remove(label)">
+                                        {{ label }}
+                                        <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                                    </mat-chip>
+                                    <mat-label *ngIf="showSeemore && hiddenLabelNames?.length">{{
+                                        hiddenLabelNames?.length }} more....
+                                    </mat-label>
+                                </mat-chip-list>
+                            </div>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <mat-chip-list #chipList aria-label="Fruit selection">
+                        <mat-icon mdPrefix>filter_list</mat-icon>
+                        <mat-chip *ngFor="let label of labelNames" [selectable]="selectable" [removable]="removable"
+                            id="{{ 'chip' + label }}" (removed)="remove(label)">
+                            {{ label }}
+                            <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                        </mat-chip>
+                        <input placeholder="Add Label..." #labelNameInput #autocompleteTrigger="matAutocompleteTrigger"
+                            [formControl]="labelNameCtrl" [matAutocomplete]="auto" [matChipInputFor]="chipList"
+                            [matChipInputSeparatorKeyCodes]="separatorKeysCodes" (matChipInputTokenEnd)="add($event)">
+                    </mat-chip-list>
+                    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)" autoActiveFirstOption>
+                        <mat-option *ngFor="let label of filteredLabelNames | async" [value]="label">
+                            <mat-checkbox color="primary" style="padding: 0 12px;"
+                                [checked]="labelNames.indexOf(label) >= 0"></mat-checkbox>
+                            {{ label }}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-expansion-panel>
+            </div>
+            <div fxFlex="50">
+                <mat-card class="search-badge">
+                    <div class="search">
+                        <mat-icon>search</mat-icon>
+                        <input #filter [(ngModel)]="filterValue" (keyup)="onSearchFilter($event)"
+                            placeholder="Badge Name/ID" />
+                    </div>
+                </mat-card>
+            </div>
+        </div>
+    </div>
+    <fuse-widget class="" fxLayout="column" fxFlex="100" fxFlex.gt-xs="25" fxFlex.gt-md="20"
+        *ngFor="let partial of partialBadges">
+        <div class="fuse-widget-front mat-elevation-z2">
+            <div class="pl-32 pr-32 py-16 h-188" style="text-align: center; position: relative; overflow:hidden">
+                <p> <img class="w-160 h-160"
+                        src="{{ partial?.badge?.meta?.image || 'assets/images/logos/badgepack-logo-2021.png' }}"
+                        onerror="this.src='assets/images/logos/badgepack-logo-2021.png';" />
+                </p>
+                <button mat-icon-button fuseWidgetToggle aria-label="more"
+                    style="position: absolute; top:10px; right:0;">
+                    <mat-icon> info </mat-icon>
+                </button>
+            </div>
+            <div class="pb-8 pt-8" fxLayout="column" fxLayoutAlign="center center">
+                <div class="mat-headline accent-800-fg pl-pl-8 pr-8" style="text-align: center">
+                    {{ partial?.badge?.name }}
+                </div>
+                <p style="margin:0;" *ngIf='partial?.claim_id' class="text-truncate"> BI-{{ partial?.claim_id }} </p>
+                <br>
+                <div style="width: 80%;">
+                    <div id="myProgress">
+                        <div id="myBar" [style.width.%]="getProgress(partial?.user_checklist)">
+                            {{ getProgressLabel(partial?.user_checklist) }}
+                        </div>
+                    </div>
+                </div>
+                <p style="font-size:10px;" *ngIf='partial?.expired_at === null' class="text-truncate">
+                    {{ partial?.enabled_at === null ? '' : 'No Expiration' }}
+                </p>
+            </div>
+            <div class="px-16 py-4 border-top" style="text-align: center">
+                <div class="labels">
+                    <ng-container *ngFor="let label of partial?.badge?.labels; index as i">
+                        <small class="text-boxed mr-0 ml-8 pl-4 pr-4 rounded" *ngIf="i <= 8">
+                            <strong matTooltip="{{ label?.name }}" matTooltipPosition="above">{{ label?.name }}</strong>
+                        </small>
+                        <small class="mr-0 ml-8 pl-4 pr-4" *ngIf="i === 9">
+                            <strong matTooltip="{{ partial?.badge?.etcLabels }}" matTooltipPosition="above">...</strong>
+                        </small>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+        <div class="fuse-widget-back p-16 pt-32 mat-elevation-z2">
+            <button mat-icon-button fuseWidgetToggle class="fuse-widget-flip-button" aria-label="Flip widget">
+                <mat-icon class="s-16">close</mat-icon>
+            </button>
+            <div *ngIf="partial?.user_checklist?.length">
+                <div [attr.claim]='partial?.claim_id' [id]="partial?.claim_id" class="content" #content>
+                    <div *ngFor="let checklist of partial?.user_checklist" style="text-align: left;">
+                        <div *ngIf='partial?.user_checklist.length'>
+                            <div *ngIf="checklist?.deleted_at === null">
+                                <mat-checkbox class="mt-24" *ngIf="(checklist?.is_checked === 'yes'
+                                    && checklist?.deleted_at !== null)
+                                    || (checklist?.deleted_at === null)"
+                                    [checked]="checkedItems.includes(checklist?.checklist_id)"
+                                    (change)="onOpenDialog(null, checklist, null, 'pending', partial, $event)"
+                                    [attr.checklist-id]="checklist?.badge_id"
+                                    [disabled]="checklist?.checklist_info?.meta?.allow_user !== true
+                                        || checkedItems.includes(checklist?.checklist_id)"
+                                    (click) = "deselectChecklistMessage(checkedItems.includes(checklist?.checklist_id), checklist, partial)"
+                                    [ngClass]="checklist?.meta?.is_manually_ticked === 'no' ? 'integration' : 'manual'">
+                                    <div *ngIf="checklist?.checklist_info?.integration_link !== null">
+                                        <a target="_blank" href="{{ checklist?.checklist_info?.integration_link }}">
+                                            {{ checklist?.checklist_info?.title }}
+                                        </a>
+                                    </div>
+                                    <div *ngIf="checklist?.checklist_info?.integration_link === null" class="title">
+                                        {{ checklist?.checklist_info?.title }}
+                                    </div>
+                                </mat-checkbox>
+                            </div>
+                            <div *ngIf="checklist?.deleted_at !== null">
+                                <mat-checkbox class="mt-24 deleted"
+                                    [checked]="checklist?.is_checked === 'yes' ? true: false"
+                                    [class.mat-checkbox-disabled]="false" disabled>
+                                    <div *ngIf="checklist?.checklist_info?.integration_link !== null">
+                                        <a target="_blank" href="{{ checklist?.checklist_info?.integration_link }}">
+                                            {{ checklist?.checklist_info?.title }}
+                                        </a>
+                                    </div>
+                                    <div *ngIf="checklist?.checklist_info?.integration_link === null" class="title">
+                                        {{ checklist?.checklist_info?.title }}
+                                    </div>
+                                </mat-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="!partial?.user_checklist?.length" style="text-align: center;">
+                        <p class="text-wrap" [innerHTML]="partial?.badge?.description"></p>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center;">
+                <p *ngIf="partial?.show === true || partial?.user_checklist.length" class="see-more" (click)="onOpenDialog(
+                        partial?.badge?.description, 
+                        partial?.user_checklist,
+                        'pending',
+                        'details',
+                        partial,
+                        $event
+                    )">See more
+                </p>
+            </div>
+        </div>
+    </fuse-widget>
+</div>

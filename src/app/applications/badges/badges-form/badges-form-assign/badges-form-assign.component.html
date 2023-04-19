@@ -1,0 +1,44 @@
+<form name="badgeForm" [formGroup]="assignedBadgesForm" (submit)="onSubmit()">
+    <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="90" class="pr-8">
+       <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+          <mat-form-field appearance="outline" fxFlex="100">
+             <mat-label>Users <span class="red-400-fg">*</span></mat-label>
+               <mat-select formControlName="user_ids" multiple>
+                 <mat-option *ngFor="let user of users" [value]="user.id"> {{user.name}} ({{user.username}})</mat-option>
+                </mat-select>
+          </mat-form-field>
+          <div fxFlex="40" fxLayoutAlign="end center" fxFlex="1 0 auto" class="issue-badge-button">
+              <button type="button" mat-raised-button color="accent" 
+              class="assign-badge-button ml-32" fxFlex="100" 
+              (click)="onSubmit()"  [disabled]="assignedBadgesForm.invalid">
+                  <span>Issue Badge</span>
+              </button>
+          </div>
+       </div>
+       <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+           <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="30">
+               <mat-form-field formGroupName="meta" appearance="outline" class="p-0">
+                   <mat-label>Issuance Date <span class="red-400-fg">*</span></mat-label>
+                   <input matInput formControlName="acquired_date" id="getDate" [matDatepicker]="picker">
+                   <mat-datepicker-toggle matSuffix [for]="picker" class="mt-1"></mat-datepicker-toggle>
+                   <mat-datepicker #picker></mat-datepicker>
+               </mat-form-field>  
+               <mat-form-field formGroupName="meta" appearance="outline">
+                    <mat-label>Issuance Time <span class="red-400-fg">*</span> </mat-label>
+                    <input matInput  
+                    formControlName="acquired_time"
+                    [ngxTimepicker]="time"
+                    id="getTime">
+                    <ngx-material-timepicker #time></ngx-material-timepicker>
+                </mat-form-field>   
+           </div>
+           <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="70" class="column-for-remarks">
+              <mat-form-field appearance="outline" class="remarks-text ml-16">
+                 <mat-label>Remarks</mat-label>
+                 <textarea rows="4" matInput formControlName="remarks"></textarea>
+             </mat-form-field>                                        
+            </div>            
+       </div>
+     </div>  
+ </form>
+ 

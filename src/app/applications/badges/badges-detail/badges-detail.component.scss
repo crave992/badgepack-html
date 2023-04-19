@@ -1,0 +1,89 @@
+badges-detail {
+
+    background: url('/assets/images/backgrounds/dark-material-bg.jpg') no-repeat 0 45%;
+    display: flex;
+    flex: 1 0 auto;
+        #container {
+    
+               .mat-card {
+                   width: 95%;
+                   max-width: 475px;
+                   margin: 0 auto;
+                   position: relative;
+                    padding: 0!important;
+                   .header {         
+                       background-color: #0f5ba7;
+                        padding: 20px 15px 40px 15px;
+                        min-height: 400px;   
+
+                       .profile-pic {
+                          border: 8px solid white;
+                          padding: 5px;
+                          border-radius: 50%;
+                          margin-top: 50px;
+                          width: 180px;
+                            }
+                        .qrcode{
+                            position: absolute;
+                            width: 70px;
+                            top: 210px;
+                        }    
+    
+                       .csid {
+                          color: rgb(243, 233, 233);
+                          font-weight: bold;
+                          font-size: 18px;
+                          margin-top: 60px;
+                         }                                 
+                   }
+    
+                      .name{
+                        display: block;
+                        background-color: rgb(5, 40, 104);  
+                        text-align: center;  
+                        padding: 20px 0;
+                        .username {
+                            bottom: 25px;
+                            color: white;
+                            font-weight: bold;
+                            border: 0;
+                            font-size: 30px;
+                            padding: 0;
+                            margin: 0;
+                            line-height: 120%;
+                        }
+
+                        .full-name {
+                            display: block;
+                            color: white;
+                            font-weight: bold;
+                            border: 0;
+                            bottom: 25px;
+                            padding: 0;
+                            margin: 0;
+                            line-height: 120%;
+                        }
+                     }   
+                     img{
+                        width: 80%;
+                    }
+                                         
+               }
+        }
+        
+    }
+@media screen and (max-width: 600px){
+    badges-detail {
+        #container {
+    
+               .mat-card {
+                     .viewport-lg {
+                        .badges-lg {
+                            width: 25%;
+                        }
+                    }
+                }
+        }
+    }
+
+}
